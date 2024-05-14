@@ -233,18 +233,58 @@ def plot_ED():
     # Plot.
 
     plt.figure(0)
-    plt.plot(bond_lengths, fci_energies, 'x-', label = 'N={}: cc-pVDZ'.format(20))
+    plt.plot(bond_lengths, fci_energies, 'x-', label = '#basis=#qubit={}: cc-pVDZ'.format(20))
     #plt.plot(bond_lengths, fci_1_energies, 'o-', label = 'N={}: sto-3g'.format(4))
-    plt.plot(bond_lengths, sto_3Gs, 'x-', label = 'N={}: sto-3g'.format(4))
-    plt.plot(bond_lengths, HFpVDZs, 'x-', label = 'N={}: HF/cc-pVDZ downfold'.format(4))
-    plt.plot(bond_lengths, KSpVDZs, 'x-', label = 'N={}: KS/cc-pVDZ downfold'.format(4))
-    plt.plot(bond_lengths, EGNNpVDZs, 'x-', label = 'N={}: EGNN/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, sto_3Gs, 'x-', label = '#basis=#qubit={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, HFpVDZs, 'x-', label = '#basis=#qubit={}: HF/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, KSpVDZs, 'x-', label = '#basis=#qubit={}: KS/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, EGNNpVDZs, 'x-', label = '#basis=#qubit={}: EGNN/cc-pVDZ downfold'.format(4))
     plt.ylabel('Energy (Hartree)')
     plt.xlabel('Bond length (angstrom)')
     plt.legend()
     plt.title('ED results of H2 molecule')
     plt.show()
-    
+
+def plot_ED_error():
+    # Set molecule parameters.
+    basis = 'sto-3g'
+    multiplicity = 1
+    bond_length_interval = 0.1
+    n_points = 25
+
+    # Generate molecule at different bond lengths.
+    bond_lengths = []
+    fci_energies = []
+    #fci_1_energies = []
+    sto_3Gs = []
+    HFpVDZs = []
+    KSpVDZs = []
+    EGNNpVDZs = []
+    for point in range(3, n_points + 1):
+        bond_length = bond_length_interval * point
+        bond_lengths += [bond_length]
+        geometry = 'H 0 0 0; H 0 0 '+str(bond_length)
+        fci_energies.append(method0(geometry))
+        #fci_1_energies.append(method0_1(geometry))
+        sto_3Gs.append(method1(geometry,ED_solve_JW))
+        HFpVDZs.append(method2(geometry,ED_solve_JW))
+        KSpVDZs.append(method3(geometry,ED_solve_JW))
+        EGNNpVDZs.append(method4(geometry,ED_solve_JW))
+
+    # Plot.
+
+    plt.figure(0)
+    #plt.plot(bond_lengths, fci_energies, 'x-', label = '#basis=#qubit={}: cc-pVDZ'.format(20))
+    #plt.plot(bond_lengths, fci_1_energies, 'o-', label = 'N={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, np.array(sto_3Gs)-np.array(fci_energies), 'x-', label = '#basis=#qubit={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, np.array(HFpVDZs)-np.array(fci_energies), 'x-', label = '#basis=#qubit={}: HF/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, np.array(KSpVDZs)-np.array(fci_energies), 'x-', label = '#basis=#qubit={}: KS/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, np.array(EGNNpVDZs)-np.array(fci_energies), 'x-', label = '#basis=#qubit={}: EGNN/cc-pVDZ downfold'.format(4))
+    plt.ylabel('Energy error (Hartree)')
+    plt.xlabel('Bond length (angstrom)')
+    plt.legend()
+    plt.title('basis error of H2 molecule')
+    plt.show()    
 def plot_VQE():
     # Set molecule parameters.
     basis = 'sto-3g'
@@ -287,4 +327,6 @@ def plot_VQE():
     plt.show()
     
 if __name__=='__main__':
-    plot_VQE()
+    #plot_VQE()
+    #plot_ED()
+    plot_ED_error()
