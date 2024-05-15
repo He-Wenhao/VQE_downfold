@@ -57,9 +57,9 @@ def get_NN_fock(pyscf_mol):
         mol = pyscf_mol
         # direct sum
         def direct_sum(A, B):
-            if A == 'None':
+            if type(A) == str:
                 return B
-            if B == 'None':
+            if type(B) == str:
                 return A
             # Create an output matrix with the appropriate shape filled with zeros
             result = np.zeros((A.shape[0] + B.shape[0], A.shape[1] + B.shape[1]))

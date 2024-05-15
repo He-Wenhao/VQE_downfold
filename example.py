@@ -59,15 +59,15 @@ for i in range(len(molecule_list)):
         atom = 
         '''
         H 0 0 0 
-        H 0 0 0.3
+        H 0 0 0.74
         ''',
         basis = 'cc-pVDZ'
     )
     # direct sum
     def direct_sum(A, B):
-        if A == 'None':
+        if type(A) == str:
             return B
-        if B == 'None':
+        if type(B) == str:
             return A
         # Create an output matrix with the appropriate shape filled with zeros
         result = np.zeros((A.shape[0] + B.shape[0], A.shape[1] + B.shape[1]))

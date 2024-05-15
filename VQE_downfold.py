@@ -9,6 +9,7 @@ from openfermion.linalg import get_sparse_operator
 import itertools
 from get_fock import get_NN_fock
 from VQE_solver import VQE_solver
+import json
 
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
 # Hamiltonian = Ham_const + \sum_{ij}(int_1bd)_{ij}c_i^daggerc_j + \sum{ijkl}(int_2bd)_{}ijkl c_i^daggerc_jc_k^daggerc_l    (index order needed checked)
@@ -229,21 +230,28 @@ def plot_ED():
         HFpVDZs.append(method2(geometry,ED_solve_JW))
         KSpVDZs.append(method3(geometry,ED_solve_JW))
         EGNNpVDZs.append(method4(geometry,ED_solve_JW))
+    res = {}
+    res['fci_energies'] = fci_energies
+    res['sto_3Gs'] = sto_3Gs
+    res['HFpVDZs'] = HFpVDZs
+    res['KSpVDZs'] = KSpVDZs
+    res['EGNNpVDZs'] = EGNNpVDZs
+    res['bond_lengths'] = bond_lengths
+    with open('res/res_ED.json','w') as data_file:
+        json.dump(res,data_file)
 
-    # Plot.
-
-    plt.figure(0)
-    plt.plot(bond_lengths, fci_energies, 'x-', label = '#basis=#qubit={}: cc-pVDZ'.format(20))
     #plt.plot(bond_lengths, fci_1_energies, 'o-', label = 'N={}: sto-3g'.format(4))
     plt.plot(bond_lengths, sto_3Gs, 'x-', label = '#basis=#qubit={}: sto-3g'.format(4))
     plt.plot(bond_lengths, HFpVDZs, 'x-', label = '#basis=#qubit={}: HF/cc-pVDZ downfold'.format(4))
     plt.plot(bond_lengths, KSpVDZs, 'x-', label = '#basis=#qubit={}: KS/cc-pVDZ downfold'.format(4))
     plt.plot(bond_lengths, EGNNpVDZs, 'x-', label = '#basis=#qubit={}: EGNN/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, fci_energies, 'x-', label = '#basis=#qubit={}: cc-pVDZ'.format(20))
     plt.ylabel('Energy (Hartree)')
     plt.xlabel('Bond length (angstrom)')
     plt.legend()
     plt.title('ED results of H2 molecule')
-    plt.show()
+    #plt.show()
+    plt.savefig('result1.png')
 
 def plot_ED_error():
     # Set molecule parameters.
@@ -310,6 +318,15 @@ def plot_VQE():
         HFpVDZs.append(method2(geometry,VQE_solver))
         KSpVDZs.append(method3(geometry,VQE_solver))
         EGNNpVDZs.append(method4(geometry,VQE_solver))
+    res = {}
+    res['fci_energies'] = fci_energies
+    res['sto_3Gs'] = sto_3Gs
+    res['HFpVDZs'] = HFpVDZs
+    res['KSpVDZs'] = KSpVDZs
+    res['EGNNpVDZs'] = EGNNpVDZs
+    res['bond_lengths'] = bond_lengths
+    with open('res/res_VQE.json','w') as data_file:
+        json.dump(res,data_file)
 
     # Plot.
 
@@ -327,6 +344,6 @@ def plot_VQE():
     plt.show()
     
 if __name__=='__main__':
-    #plot_VQE()
+    plot_VQE()
     #plot_ED()
-    plot_ED_error()
+    #plot_ED_error()

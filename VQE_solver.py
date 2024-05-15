@@ -28,7 +28,7 @@ from pytket.backends.resulthandle import ResultHandle
 import numpy as np
 from scipy.optimize import approx_fprime
 from pytket import OpType
-
+from openfermion.linalg import get_sparse_operator
 
 
 # %%
@@ -46,7 +46,13 @@ noiseModel = noise.NoiseModel()
 
 # %%
 def VQE_solver(hamiltonian):
-    
+    # ED solve the qubit Hamiltonian
+    def ED_solve_JW(new_jw_hamiltonian):
+        new_jw_matrix = get_sparse_operator(new_jw_hamiltonian)
+        new_eigenenergies, new_eigenvecs = np.linalg.eigh(new_jw_matrix.toarray())
+        return new_eigenenergies[0]
+    print('dbg_input energy:',ED_solve_JW(hamiltonian))
+    print('dbg_Hamiltonian:',hamiltonian)
 
     # %%
     def qps_from_openfermion(term):
@@ -79,9 +85,12 @@ def VQE_solver(hamiltonian):
 
     # %%
     sm = hamiltonian_op.to_sparse_matrix().toarray()
-    ground_state_energy = eig(sm)[0].real[0]
+    ground_state_energy = eig(sm)[0]
+    ground_state_energy = np.sort(ground_state_energy)
+    ground_state_energy = ground_state_energy[0].real
     print(f"{ground_state_energy} Ha")
-
+    #return ground_state_energy
+    #return ground_state_energy # dbg
     # %%
     strat = PauliPartitionStrat.NonConflictingSets
     pauli_strings = [term for term in hamiltonian_op._dict.keys()]
@@ -136,7 +145,7 @@ def VQE_solver(hamiltonian):
     # Generate and store circuits for each Pauli string
     circuits = {pauli: generate_circuit(pauli) for pauli in pauli_strings}
     # Assuming 'circuits' is your dictionary of circuits from previous steps
-    ucc = Circuit(4).X(0).X(2)
+    ucc = Circuit(4).X(0).X(1)
 
     # Add each circuit to the main circuit
     for pauli, circuit in circuits.items():
@@ -187,3 +196,38 @@ def VQE_solver(hamiltonian):
     # # 
 
 
+if __name__ == '__main__':
+    ham = (
+        (1.3007238601106832+0j) *of.QubitOperator('') +
+        (-0.04020462980098227+0j) *of.QubitOperator('X0 X1 Y2 Y3') +
+        (0.04020462980098227+0j) *of.QubitOperator('X0 Y1 Y2 X3') +
+        (0.04020462980098227+0j) *of.QubitOperator('Y0 X1 X2 Y3') +
+        (-0.04020462980098227+0j) *of.QubitOperator('Y0 Y1 X2 X3') +
+        (0.25869154301451336+0j) *of.QubitOperator('Z0') +
+        (0.18800463899413097+0j) *of.QubitOperator('Z0 Z1') +
+        (0.1452708879592182+0j) *of.QubitOperator('Z0 Z2') +
+        (0.18547551776020055+0j) *of.QubitOperator('Z0 Z3') +
+        (0.25869154301451336+0j) *of.QubitOperator('Z1') +
+        (0.18547551776020055+0j) *of.QubitOperator('Z1 Z2') +
+        (0.1452708879592182+0j) *of.QubitOperator('Z1 Z3') +
+        (-0.5499573668944435+0j) *of.QubitOperator('Z2') +
+        (0.19623437361620866+0j) *of.QubitOperator('Z2 Z3') +
+        (-0.5499573668944435+0j) *of.QubitOperator('Z3')
+    )
+    VQE_solver(ham)
+
+'''(1.3007238601106832+0j) [] +
+(-0.04020462980098227+0j) [X0 X1 Y2 Y3] +
+(0.04020462980098227+0j) [X0 Y1 Y2 X3] +
+(0.04020462980098227+0j) [Y0 X1 X2 Y3] +
+(-0.04020462980098227+0j) [Y0 Y1 X2 X3] +
+(0.25869154301451336+0j) [Z0] +
+(0.18800463899413097+0j) [Z0 Z1] +
+(0.1452708879592182+0j) [Z0 Z2] +
+(0.18547551776020055+0j) [Z0 Z3] +
+(0.25869154301451336+0j) [Z1] +
+(0.18547551776020055+0j) [Z1 Z2] +
+(0.1452708879592182+0j) [Z1 Z3] +
+(-0.5499573668944435+0j) [Z2] +
+(0.19623437361620866+0j) [Z2 Z3] +
+(-0.5499573668944435+0j) [Z3]'''
