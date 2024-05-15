@@ -41,11 +41,12 @@ aer_backend = AerBackend()
 # %%
 from qiskit_aer.noise import NoiseModel
 from qiskit_aer import noise
-noiseModel = noise.NoiseModel()
-#noisy_aer_backend = AerBackend(noise_model = noiseModel)
 
 # %%
-def VQE_solver(hamiltonian):
+def VQE_solver(hamiltonian,noise=False):
+    if noise:
+        noiseModel = noise.NoiseModel()
+        noisy_aer_backend = AerBackend(noise_model = noiseModel)
     # ED solve the qubit Hamiltonian
     def ED_solve_JW(new_jw_hamiltonian):
         new_jw_matrix = get_sparse_operator(new_jw_hamiltonian)

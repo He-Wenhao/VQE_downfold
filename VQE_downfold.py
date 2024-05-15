@@ -71,7 +71,7 @@ def add_spin_1bd(int_1bd):
     return res
 
 # ED solve the qubit Hamiltonian
-def ED_solve_JW(new_jw_hamiltonian):
+def ED_solve_JW(new_jw_hamiltonian,noise=False):
     new_jw_matrix = get_sparse_operator(new_jw_hamiltonian)
     new_eigenenergies, new_eigenvecs = np.linalg.eigh(new_jw_matrix.toarray())
     return new_eigenenergies[0]
@@ -104,7 +104,7 @@ def method0_1(geometry):
     return fci_energy
     
 # method1: HF+sto-3g -> sto-3g, ED solver
-def method1(geometry,solver):
+def method1(geometry,solver,noise=False):
     ham = Fermi_Ham()
     # initilize with molecule configuration
     ham.pyscf_init(atom=geometry,basis='sto-3g')
@@ -124,12 +124,12 @@ def method1(geometry,solver):
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     ham.calc_Ham_othonormalize(basis,basis.shape[0]) # fermionic hamiltonian on new basis
     qubit_ham = ham.JW_trans()  # do jw transformation
-    qb_energy = solver(qubit_ham)
+    qb_energy = solver(qubit_ham,noise=noise)
     print('E(qubit-sto-3g) = %.12f' % qb_energy)
     return qb_energy
 
 # method2: HF+cc-pVDZ -> sto-3g, ED solver
-def method2(geometry,solver):
+def method2(geometry,solver,noise=False):
     ham = Fermi_Ham()
     # initilize with molecule configuration
     ham.pyscf_init(atom=geometry,basis='cc-pVDZ')
@@ -149,13 +149,13 @@ def method2(geometry,solver):
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     ham.calc_Ham_othonormalize(basis,2) # fermionic hamiltonian on new basis
     qubit_ham = ham.JW_trans()  # do jw transformation
-    qb_energy = solver(qubit_ham)
+    qb_energy = solver(qubit_ham,noise=noise)
     print('E(qubit-HF/cc-pVDZ downfold) = %.12f' % qb_energy)
     return qb_energy
 
 
 # method3: DFT+cc-pVDZ -> sto-3g, ED solver
-def method3(geometry,solver):
+def method3(geometry,solver,noise=False):
     ham = Fermi_Ham()
     # initilize with molecule configuration
     ham.pyscf_init(atom=geometry,basis='cc-pVDZ')
@@ -175,12 +175,12 @@ def method3(geometry,solver):
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     ham.calc_Ham_othonormalize(basis,2) # fermionic hamiltonian on new basis
     qubit_ham = ham.JW_trans()  # do jw transformation
-    qb_energy = solver(qubit_ham)
+    qb_energy = solver(qubit_ham,noise=noise)
     print('E(qubit-KS/cc-pVDZ downfold) = %.12f' % qb_energy)
     return qb_energy
 
 # method4: EGNN+cc-pVDZ -> sto-3g, ED solver
-def method4(geometry,solver):
+def method4(geometry,solver,noise=False):
     ham = Fermi_Ham()
     # initilize with molecule configuration
     ham.pyscf_init(atom=geometry,basis='cc-pVDZ')
@@ -201,7 +201,7 @@ def method4(geometry,solver):
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     ham.calc_Ham_othonormalize(basis,2) # fermionic hamiltonian on new basis
     qubit_ham = ham.JW_trans()  # do jw transformation
-    qb_energy = solver(qubit_ham)
+    qb_energy = solver(qubit_ham,noise=noise)
     print('E(qubit-EGNN/cc-pVDZ downfold) = %.12f' % qb_energy)
     return qb_energy
 
@@ -343,6 +343,57 @@ def plot_VQE():
     plt.title('ED results of H2 molecule')
     plt.show()
     
+def plot_VQE_noise():
+    # Set molecule parameters.
+    basis = 'sto-3g'
+    multiplicity = 1
+    bond_length_interval = 0.1
+    n_points = 25
+
+    # Generate molecule at different bond lengths.
+    bond_lengths = []
+    fci_energies = []
+    #fci_1_energies = []
+    sto_3Gs = []
+    HFpVDZs = []
+    KSpVDZs = []
+    EGNNpVDZs = []
+    for point in range(3, n_points + 1):
+        bond_length = bond_length_interval * point
+        bond_lengths += [bond_length]
+        geometry = 'H 0 0 0; H 0 0 '+str(bond_length)
+        fci_energies.append(method0(geometry))
+        #fci_1_energies.append(method0_1(geometry))
+        sto_3Gs.append(method1(geometry,VQE_solver,noise=True))
+        HFpVDZs.append(method2(geometry,VQE_solver,noise=True))
+        KSpVDZs.append(method3(geometry,VQE_solver,noise=True))
+        EGNNpVDZs.append(method4(geometry,VQE_solver,noise=True))
+    res = {}
+    res['fci_energies'] = fci_energies
+    res['sto_3Gs'] = sto_3Gs
+    res['HFpVDZs'] = HFpVDZs
+    res['KSpVDZs'] = KSpVDZs
+    res['EGNNpVDZs'] = EGNNpVDZs
+    res['bond_lengths'] = bond_lengths
+    with open('res/res_VQE_noise.json','w') as data_file:
+        json.dump(res,data_file)
+
+    # Plot.
+
+    plt.figure(0)
+    plt.plot(bond_lengths, fci_energies, 'x-', label = 'N={}: cc-pVDZ'.format(20))
+    #plt.plot(bond_lengths, fci_1_energies, 'o-', label = 'N={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, sto_3Gs, 'x-', label = 'N={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, HFpVDZs, 'x-', label = 'N={}: HF/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, KSpVDZs, 'x-', label = 'N={}: KS/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, EGNNpVDZs, 'x-', label = 'N={}: EGNN/cc-pVDZ downfold'.format(4))
+    plt.ylabel('Energy (Hartree)')
+    plt.xlabel('Bond length (angstrom)')
+    plt.legend()
+    plt.title('ED results of H2 molecule')
+    plt.show()
+    
+
 if __name__=='__main__':
     plot_VQE()
     #plot_ED()
