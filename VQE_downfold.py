@@ -8,7 +8,7 @@ from openfermion.transforms import get_fermion_operator, jordan_wigner, bravyi_k
 from openfermion.linalg import get_sparse_operator
 import itertools
 from get_fock import get_NN_fock
-from VQE_solver import VQE_solver
+#from VQE_solver import VQE_solver
 import json
 
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
@@ -56,7 +56,7 @@ def add_spin_2bd(int_2bd):
     dim = int_2bd.shape[0]
     res = np.zeros((2*dim,2*dim,2*dim,2*dim))
     for i1,i2,i3,i4 in itertools.product(range(dim), repeat=4):
-        for s1,s2,s3,s4 in itertools.product(range(dim), repeat=4):
+        for s1,s2,s3,s4 in itertools.product(range(2), repeat=4):
             if s1 == s4 and s2 == s3:
                 res[i1*2+s1,i2*2+s2,i3*2+s3,i4*2+s4] = int_2bd[i1,i2,i3,i4]
     return res
@@ -65,7 +65,7 @@ def add_spin_1bd(int_1bd):
     dim = int_1bd.shape[0]
     res = np.zeros((2*dim,2*dim))
     for i1,i2 in itertools.product(range(dim), repeat=2):
-        for s1,s2 in itertools.product(range(dim), repeat=2):
+        for s1,s2 in itertools.product(range(2), repeat=2):
             if s1 == s2:
                 res[i1*2+s1,i2*2+s2] = int_1bd[i1,i2]
     return res
@@ -126,6 +126,44 @@ def method1(geometry,solver,noise=False):
     qubit_ham = ham.JW_trans()  # do jw transformation
     qb_energy = solver(qubit_ham,noise=noise)
     print('E(qubit-sto-3g) = %.12f' % qb_energy)
+    return qb_energy
+
+# method1_QO: method1 + quasi orbital, ED solver
+def method1_QO(geometry,solver,noise=False):
+    dim_obj = 2 # here we neglect spin freedom
+    half_nele = 1 # half electron number
+    ham = Fermi_Ham()
+    # initilize with molecule configuration
+    ham.pyscf_init(atom=geometry,basis='cc-pVDZ')
+    # run HF, get Fock and overlap matrix
+    ham.mol.verbose = 0
+    myhf = ham.mol.RHF().run()
+    fock_AO = myhf.get_fock()
+    overlap = ham.mol.intor('int1e_ovlp')
+    # solve generalized eigenvalue problem, the generalized eigen vector is new basis
+    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
+    h_orth = overlap_mh @ fock_AO @ overlap_mh
+    _energy, basis_orth = np.linalg.eigh(h_orth)
+    basis = overlap_mh @ basis_orth
+    # filled orbitals
+    fi_orbs = basis[:,:half_nele]
+    # W matrix from Eq. (33) in https://journals.aps.org/prb/pdf/10.1103/PhysRevB.78.245112
+    Wmat = (overlap - overlap @ fi_orbs @ fi_orbs.T @ overlap)
+    # diagonalize W_mat, find maximal eigen states
+    #Wmat_orth = overlap_mh @ Wmat @ overlap_mh
+    _energy2, Weig = np.linalg.eigh(-Wmat)
+    print('energy2:',_energy2)
+    emp_orbs = (np.eye(overlap.shape[0]) - fi_orbs @ fi_orbs.T @ overlap ) @ Weig @ scipy.linalg.fractional_matrix_power(-np.diag(_energy2), (-1/2)) 
+    # build new basis
+    QO_basis = np.hstack( (fi_orbs , emp_orbs[:,:overlap.shape[0]-half_nele]) )
+    #print('my basis:\n',basis)
+    #print('basic basis:\n',myhf.mo_coeff)
+    # calculate downfolding hamiltonian accroding to basis
+    ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
+    ham.calc_Ham_othonormalize(QO_basis,dim_obj) # fermionic hamiltonian on new basis
+    qubit_ham = ham.JW_trans()  # do jw transformation
+    qb_energy = solver(qubit_ham,noise=noise)
+    print('E(QO) = %.12f' % qb_energy)
     return qb_energy
 
 # method2: HF+cc-pVDZ -> sto-3g, ED solver
@@ -237,6 +275,58 @@ def plot_ED():
     res['KSpVDZs'] = KSpVDZs
     res['EGNNpVDZs'] = EGNNpVDZs
     res['bond_lengths'] = bond_lengths
+    with open('res/res_ED.json','w') as data_file:
+        json.dump(res,data_file)
+
+    #plt.plot(bond_lengths, fci_1_energies, 'o-', label = 'N={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, sto_3Gs, 'x-', label = '#basis=#qubit={}: sto-3g'.format(4))
+    plt.plot(bond_lengths, HFpVDZs, 'x-', label = '#basis=#qubit={}: HF/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, KSpVDZs, 'x-', label = '#basis=#qubit={}: KS/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, EGNNpVDZs, 'x-', label = '#basis=#qubit={}: EGNN/cc-pVDZ downfold'.format(4))
+    plt.plot(bond_lengths, fci_energies, 'x-', label = '#basis=#qubit={}: cc-pVDZ'.format(20))
+    plt.ylabel('Energy (Hartree)')
+    plt.xlabel('Bond length (angstrom)')
+    plt.legend()
+    plt.title('ED results of H2 molecule')
+    #plt.show()
+    plt.savefig('result1.png')
+
+
+def plot_QO():
+    # Set molecule parameters.
+    basis = 'sto-3g'
+    multiplicity = 1
+    bond_length_interval = 0.1
+    n_points = 25
+
+    # Generate molecule at different bond lengths.
+    bond_lengths = []
+    fci_energies = []
+    #fci_1_energies = []
+    sto_3Gs = []
+    HFpVDZs = []
+    KSpVDZs = []
+    EGNNpVDZs = []
+    QOs = []
+    for point in range(3, n_points + 1):
+        bond_length = bond_length_interval * point
+        bond_lengths += [bond_length]
+        geometry = 'H 0 0 0; H 0 0 '+str(bond_length)
+        fci_energies.append(method0(geometry))
+        #fci_1_energies.append(method0_1(geometry))
+        sto_3Gs.append(method1(geometry,ED_solve_JW))
+        QOs.append(method1_QO(geometry,ED_solve_JW))
+        HFpVDZs.append(method2(geometry,ED_solve_JW))
+        KSpVDZs.append(method3(geometry,ED_solve_JW))
+        #EGNNpVDZs.append(method4(geometry,ED_solve_JW))
+    res = {}
+    res['fci_energies'] = fci_energies
+    res['sto_3Gs'] = sto_3Gs
+    res['HFpVDZs'] = HFpVDZs
+    res['KSpVDZs'] = KSpVDZs
+    #res['EGNNpVDZs'] = EGNNpVDZs
+    res['bond_lengths'] = bond_lengths
+    res['QOs'] = QOs
     with open('res/res_ED.json','w') as data_file:
         json.dump(res,data_file)
 
@@ -394,7 +484,23 @@ def plot_VQE_noise():
     plt.show()
     
 
+def dbg_test():
+    # method0: cc-pVDZ, FCI solver
+    ham = Fermi_Ham()
+    # initilize with molecule configuration
+    ham.pyscf_init(atom='H 0 0 0; H 0 0 1',basis='sto-3G')
+    # run HF
+    ham.mol.verbose = 0
+    myhf = ham.mol.RHF().run()
+    # run FCI based on HF
+    cisolver = fci.FCI(myhf)
+    fci_energy = cisolver.kernel()[0]
+    print('E(sto-3G) = %.12f' % fci_energy)
+    return fci_energy
+
 if __name__=='__main__':
-    plot_VQE()
+    #plot_VQE()
     #plot_ED()
     #plot_ED_error()
+    #plot_QO()
+    dbg_test()

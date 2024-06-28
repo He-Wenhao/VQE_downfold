@@ -10,12 +10,18 @@ import torch;
 from scipy.interpolate import lagrange;
 import numpy as np;
 import scipy;
+import os
+
+current_file_path = os.path.abspath(__file__)
+parent_directory = os.path.dirname(current_file_path)
+parent_directory = os.path.dirname(parent_directory)
+
 
 class integrate():
 
     def __init__(self, device):
 
-        with open('script/orbitals.json','r') as file:
+        with open(parent_directory+'/script/orbitals.json','r') as file:
             self.orbs_elements = json.load(file);
         self.device = device;
         self.zeta = {};

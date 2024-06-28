@@ -40,8 +40,8 @@ def get_NN_fock(pyscf_mol):
     #                                 'zz','xy','xz','yz']];
     operators_electric = []
 
-    est = estimator(device, scaling = scaling);
-    est.load('best_model_HF.pt');
+    est = estimator(device, output_folder='/home/hewenhao/Documents/wenhaohe/research/VQE_downfold/test_output', scaling = scaling);
+    est.load('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold/best_model_HF.pt');
 
     for i in range(len(molecule_list)):
         
