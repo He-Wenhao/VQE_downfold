@@ -2,7 +2,7 @@
 
 In quantum chemistry calculation, choosing cut-off dimension is important. To make use of limited computation resource, we desire to efficiently represent larger Hilbert space with a small set of basis, which is called downfolding. Here we implement several downfolding strategy. We also test VQE with the downfolded Hamiltonians.
 
-The codes are stored in ```downfolding_methods.py```, ```genHam.py``` and ```solveHam.py``` are wrappers to make it user friendly.
+The codes are stored in ```downfolding_methods.py```. ```genHam.py``` and ```solveHam.py``` are wrappers to make it user friendly.
 
 # Usage
 
@@ -13,7 +13,7 @@ The codes are stored in ```downfolding_methods.py```, ```genHam.py``` and ```sol
 H 0 0 0
 H 0 0 0.75
 ```
-## 2. Generate Hamiltonian according to different strategy. This step will generate both fermionic Hamiltonian and qubit Hamiltonian according to JW transformation. The result is stored in ```fermionic_ham.tmp.json```. e.g.:
+## 2. Generate downfolded Fermionic Hamiltonian. Downfolding strategy can be set by ```--strategy```. The result is stored in ```fermionic_ham.tmp.json```. e.g.:
 ```
 python3 genHam.py --config H2.xyz --strategy HF ccpVDZ sto-3G
 ```
