@@ -17,7 +17,11 @@ H 0 0 0.75
 ```
 python3 genHam.py --config H2.xyz --strategy HF ccpVDZ sto-3G
 ```
-where ```--strategy``` in the example means using Hatree Fock to downfold ccpVDZ basis into a smaller basis with the same size of sto-3G basis. Here HF can be replaced by B3LYP or EGNN. If we set two same basis like ```--strategy HF sto-3G sto-3G```, the programe will do no downfolding and generate a Hamiltonian on sto-3G molecular orbital (MO) basis. The downfolding strategy is explained in /documents
+where ```--strategy``` in the example means using Hatree Fock to downfold ccpVDZ basis into a smaller basis with the same size of sto-3G basis. Here HF can be replaced by B3LYP or EGNN. If we set two same basis like ```--strategy HF sto-3G sto-3G```, the programe will do no downfolding and generate a Hamiltonian on sto-3G molecular orbital (MO) basis. The downfolding strategy is explained in /documents.
+
+We can also use a self defined fock matrix TBD, we provide a EGNN method TBD.
+
+We also provide Quasi Orbital(QO) strategy TBD. (Reference Here, TBD)
 ## 3. Do Jordan Wigner transformation. The result is stored in ```qubit_ham.tmp.json```.
 ```
 python3 genHam.py -JW
@@ -32,4 +36,4 @@ Alternatively, we can set ```--method ED``` to solve qubit Hamiltonian with ED; 
 ## simple_example
 A simple example following this readme file.
 ## H2 dissociation
-In this example, we directly use functions in ```downfolding_methods.py```.
+In this example, we directly use functions in ```downfolding_methods.py```. WHere we benchmark the energy results of different downfolding strategies, we also benchmark the 1-norm of Pauli coefficient of the Hamiltonian.
