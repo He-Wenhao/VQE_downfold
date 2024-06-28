@@ -9,8 +9,7 @@ from pyscf import fci
 from pyscf import gto, scf, ao2mo, cc
 
 import sys
-sys.path.append('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold')
-from get_fock import get_NN_fock
+
 
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
 # Hamiltonian = Ham_const + \sum_{ij}(int_1bd)_{ij}c_i^daggerc_j + \sum{ijkl}(int_2bd)_{}ijkl c_i^daggerc_jc_k^daggerc_l    (index order needed checked)
@@ -83,6 +82,8 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         myhf.xc = 'lda,vwn'
         fock_AO = myhf.get_fock()
     elif fock_method == 'EGNN':
+        sys.path.append('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold')
+        from get_fock import get_NN_fock
         fock_AO = get_NN_fock(ham.mol)
     else:
         raise TypeError('fock_method ', fock_method, ' does not exist')
@@ -175,7 +176,7 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
 
 
 def dbg_test():
-    ham = fock_downfolding(n_folded=2,fock_method='HF',QO=False,atom='H2.xyz',basis = 'ccpVDZ')
+    ham = fock_downfolding(n_folded=2,fock_method='EGNN',QO=False,atom='H2.xyz',basis = 'ccpVDZ')
     E = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
     print('fermionic ham',(ham.Ham_const,ham.int_1bd,ham.int_2bd))
     print('fci fermionic result: ',E)
