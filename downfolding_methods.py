@@ -8,6 +8,9 @@ import itertools
 from pyscf import fci
 from pyscf import gto, scf, ao2mo, cc
 
+import sys
+sys.path.append('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold')
+from get_fock import get_NN_fock
 
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
 # Hamiltonian = Ham_const + \sum_{ij}(int_1bd)_{ij}c_i^daggerc_j + \sum{ijkl}(int_2bd)_{}ijkl c_i^daggerc_jc_k^daggerc_l    (index order needed checked)
@@ -75,8 +78,12 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         myhf = ham.mol.RKS().run()
         myhf.xc = 'B3LYP'
         fock_AO = myhf.get_fock()
+    elif fock_method == 'lda,vwn':
+        myhf = ham.mol.RKS().run()
+        myhf.xc = 'lda,vwn'
+        fock_AO = myhf.get_fock()
     elif fock_method == 'EGNN':
-        raise TypeError('not implemented yet')
+        fock_AO = get_NN_fock(ham.mol)
     else:
         raise TypeError('fock_method ', fock_method, ' does not exist')
     overlap = ham.mol.intor('int1e_ovlp')
@@ -89,7 +96,19 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
     #print('basic basis:\n',myhf.mo_coeff)
     # if quasi orbital is used
     if QO:
-        pass
+        half_nele = sum(ham.mol.nelec) // 2
+        # filled orbitals
+        fi_orbs = basis[:,:half_nele]
+        # W matrix from Eq. (33) in https://journals.aps.org/prb/pdf/10.1103/PhysRevB.78.245112
+        Wmat = (overlap - overlap @ fi_orbs @ fi_orbs.T @ overlap)
+        # diagonalize W_mat, find maximal eigen states
+        #Wmat_orth = overlap_mh @ Wmat @ overlap_mh
+        _energy2, Weig = np.linalg.eigh(-Wmat)
+        print('energy2:',_energy2)
+        emp_orbs = (np.eye(overlap.shape[0]) - fi_orbs @ fi_orbs.T @ overlap ) @ Weig @ scipy.linalg.fractional_matrix_power(-np.diag(_energy2), (-1/2)) 
+        # build new basis
+        QO_basis = np.hstack( (fi_orbs , emp_orbs[:,:overlap.shape[0]-half_nele]) ) 
+        basis = QO_basis
     # calculate downfolding hamiltonian accroding to basis
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     ham.calc_Ham_othonormalize(basis,n_folded) # fermionic hamiltonian on new basis
@@ -156,7 +175,7 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
 
 
 def dbg_test():
-    ham = fock_downfolding(n_folded=2,fock_method='B3LYP',QO=False,atom='H2.xyz',basis = 'ccpVDZ')
+    ham = fock_downfolding(n_folded=2,fock_method='HF',QO=False,atom='H2.xyz',basis = 'ccpVDZ')
     E = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
     print('fermionic ham',(ham.Ham_const,ham.int_1bd,ham.int_2bd))
     print('fci fermionic result: ',E)
