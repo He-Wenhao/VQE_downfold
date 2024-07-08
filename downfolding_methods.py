@@ -151,8 +151,9 @@ def S_optimized_basis(**kargs):
         basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
         basis_orth = basis_orth[:,:2]
         ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
-        S = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
-        #print(E)
+        S,E, rdm, _ = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+        print('rdm',rdm)
+        print(E,'S:',S)
         return -S
     # minimize cost_func over a SO(n_bf) group
     
@@ -186,7 +187,7 @@ def S_optimized_basis_constraint(fock_method='HF',**kargs):
         basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
         basis_orth = basis_orth[:,:2]
         ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
-        S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+        S,E, _, _ = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
         print(E)
         return S, E
     # minimize cost_func over a SO(n_bf) group
@@ -218,14 +219,14 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
     old_first_orb_const = np.zeros(first_orb_const.shape)
     oldx = []
     while np.linalg.norm( first_orb_const- old_first_orb_const) > 1e-8: # optimize first_orb_const
-        print('big cycle')
+        #print('big cycle')
         def cost_function(basis_orth_flat,first_orb_const):
             basis_orth_flat = np.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
             basis_orth = basis_orth_flat.reshape((n_bf,2))
             basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
             basis_orth = basis_orth[:,:2]
             ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
-            S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+            S,E, rdm, FCIvec = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
             print(E,S)
             return S, E
         # minimize cost_func over a SO(n_bf) group
@@ -252,8 +253,13 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
             #sub_basis_orth, _R = qr(sub_basis_orth)    # orthorgonalize basis_orth
             n_basis_orth = basis_orth @ sub_basis_orth
             ham = basis_downfolding(ham0,overlap_mh, n_basis_orth, n_folded=2)
-            S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
-            print('cycle 2:',E,S)
+            S,E, rdm, FCIvec = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+            #print('n_basis_orth:',n_basis_orth)
+            #print('1bd mat:',ham.int_1bd)
+            #print('rdm:',rdm)
+            #print('FCIvec:',FCIvec)
+            #print('cycle 2:',E,S)
+            print(E,S)
             return S, E
         new_result = minimize(lambda x:cost_function_2(x,basis_orth)[0], 0, method='Nelder-Mead')
         old_first_orb_const = first_orb_const
@@ -400,7 +406,7 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
     # In PySCF, the customized Hamiltonian needs to be created once in mf object.
     # The Hamiltonian will be used everywhere whenever possible.  Here, the model
     # Hamiltonian is passed to CCSD/FCI object via the mf object.
-    mycc = fci.FCI(mf).run()
+    mycc = fci.FCI(mf,np.array([[1.,0.],[0.,1.]])).run()
     FCIvec = mycc.ci
     waveFunc = np.zeros((2,2,2,2))
     waveFunc[0,1,0,1] = FCIvec[0,0]
@@ -409,8 +415,10 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
     waveFunc[1,0,1,0] = FCIvec[1,1]
     waveFunc = np.reshape(waveFunc,(16,1))
     dm = waveFunc @ waveFunc.T
-    dm = np.reshape(dm,(4,4,4,4))
-    rdm = np.trace(dm,axis1=1,axis2=3)
+    dm = np.reshape(dm,(2,2,2,2,2,2,2,2))
+    rdm = np.trace(dm,axis1=1,axis2=5)
+    rdm = np.trace(rdm,axis1=2,axis2=5)
+    rdm = np.reshape(rdm,(4,4))
     e, v = LA.eig(rdm)
     def entro(x):
         res = []
@@ -422,7 +430,7 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
         return np.sum(res)
     S = entro(e)
     #print('total energy:',mycc.e_tot+Ham_const,'; entropy:',S)
-    return S ,mycc.e_tot+Ham_const
+    return S ,mycc.e_tot+Ham_const,rdm , FCIvec
 
 def dbg_test():
     ham = fock_downfolding(n_folded=2,fock_method='EGNN',QO=False,atom='H2.xyz',basis = 'ccpVDZ')
@@ -438,6 +446,7 @@ def dbg_test():
 
 if __name__=='__main__':
     #dbg_test()
-    S_optimized_basis_constraint_multi_rounds(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
+    S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
     #E_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
+    #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
