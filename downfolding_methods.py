@@ -67,14 +67,24 @@ def add_spin_1bd(int_1bd):
 
     
 
-def basis_downfolding_init(**kargs):
+def basis_downfolding_init(fock_method = 'HF',**kargs):
     ham = Fermi_Ham()
     # initilize with molecule configuration
     ham.pyscf_init(**kargs)
     # run HF, get Fock and overlap matrix
     ham.mol.verbose = 0
-    myhf = ham.mol.RHF().run()
-    fock_AO = myhf.get_fock()
+
+    if fock_method == 'HF':
+        myhf = ham.mol.RHF().run()
+        fock_AO = myhf.get_fock()
+    elif fock_method == 'B3LYP':
+        myhf = ham.mol.RKS().run()
+        myhf.xc = 'B3LYP'
+        fock_AO = myhf.get_fock()
+    elif fock_method == 'lda,vwn':
+        myhf = ham.mol.RKS().run()
+        myhf.xc = 'lda,vwn'
+        fock_AO = myhf.get_fock()
     overlap = ham.mol.intor('int1e_ovlp')
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
@@ -160,7 +170,7 @@ def S_optimized_basis(**kargs):
     #print("Optimal matrix Q:", Q_opt)
     return result.fun
 
-def S_optimized_basis_constraint(**kargs):
+def S_optimized_basis_constraint(fock_method='HF',**kargs):
     import numpy as np
     from scipy.optimize import minimize
     from scipy.linalg import qr
@@ -168,7 +178,7 @@ def S_optimized_basis_constraint(**kargs):
     # dimension before folding
     n_bf = norbs(**kargs)
     # initialize initial guess
-    ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
+    ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=fock_method,**kargs)
     first_orb_const = (basis_orth_init[:,0:1]).flatten()
     def cost_function(basis_orth_flat):
         basis_orth_flat = np.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
@@ -177,7 +187,7 @@ def S_optimized_basis_constraint(**kargs):
         basis_orth = basis_orth[:,:2]
         ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
         S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
-        #print(E)
+        print(E)
         return S, E
     # minimize cost_func over a SO(n_bf) group
     
@@ -195,6 +205,70 @@ def S_optimized_basis_constraint(**kargs):
     #print("Optimal matrix Q:", Q_opt)
     return cost_function(result.x)[1]
 
+def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
+    import numpy as np
+    from scipy.optimize import minimize
+    from scipy.linalg import qr
+
+    # dimension before folding
+    n_bf = norbs(**kargs)
+    # initialize initial guess
+    ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=fock_method,**kargs)
+    first_orb_const = (basis_orth_init[:,0:1]).flatten()
+    old_first_orb_const = np.zeros(first_orb_const.shape)
+    oldx = []
+    while np.linalg.norm( first_orb_const- old_first_orb_const) > 1e-8: # optimize first_orb_const
+        print('big cycle')
+        def cost_function(basis_orth_flat,first_orb_const):
+            basis_orth_flat = np.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
+            basis_orth = basis_orth_flat.reshape((n_bf,2))
+            basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
+            basis_orth = basis_orth[:,:2]
+            ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
+            S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+            print(E,S)
+            return S, E
+        # minimize cost_func over a SO(n_bf) group
+        
+        # Initial guess (needs to be orthogonal)
+        if len(oldx) == 0:
+            Q0 = basis_orth_init[:,1:2]
+            Q0_flat = Q0.flatten()
+            oldx = Q0_flat
+        #print('initial guess:',basis_orth_init)
+        # Optimization using Nelder-Mead
+        result = minimize(lambda x:-cost_function(x,first_orb_const)[0], oldx, method='Nelder-Mead')
+        oldx = result.x
+        basis_orth = np.hstack((first_orb_const.reshape(10,1),result.x.reshape((n_bf,1))))
+        basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
+        basis_orth = basis_orth[:,:2]
+        # get a optimized new_first_orb_const
+        #sub_basis_orth_flat = np.eye(2).flatten()
+        #sub_basis_orth_flat = np.array([1,2,3,4])
+        def cost_function_2(theta,basis_orth):
+            st = np.sin(theta)
+            ct = np.cos(theta)
+            sub_basis_orth = np.array([[ct,st],[-st,ct]]).reshape((2,2))
+            #sub_basis_orth, _R = qr(sub_basis_orth)    # orthorgonalize basis_orth
+            n_basis_orth = basis_orth @ sub_basis_orth
+            ham = basis_downfolding(ham0,overlap_mh, n_basis_orth, n_folded=2)
+            S,E = entropy_entangle(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+            print('cycle 2:',E,S)
+            return S, E
+        new_result = minimize(lambda x:cost_function_2(x,basis_orth)[0], 0, method='Nelder-Mead')
+        old_first_orb_const = first_orb_const
+        theta = new_result.x
+        st = np.sin(theta)
+        ct = np.cos(theta)
+        sub_basis_orth = np.array([[ct,st],[-st,ct]]).reshape((2,2))
+        #sub_basis_orth, _R = qr(sub_basis_orth)
+        first_orb_const = (basis_orth @ sub_basis_orth)[:,0:1]
+    # Reshape the result back into a matrix
+    #Q_opt = result.x.reshape((n_bf, 2))
+    #Q_opt, _ = qr(Q_opt)  # Ensure the result is orthogonal
+    #print(result)
+    #print("Optimal matrix Q:", Q_opt)
+    return cost_function(result.x,first_orb_const)[1]
 # Many body Hamiltonian with downfolding technique
 def fock_downfolding(n_folded,fock_method,QO,**kargs):
     ham = Fermi_Ham()
@@ -364,5 +438,6 @@ def dbg_test():
 
 if __name__=='__main__':
     #dbg_test()
-    S_optimized_basis_constraint(atom='H2.xyz',basis='ccpVDZ')
+    S_optimized_basis_constraint_multi_rounds(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
+    #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
     #E_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
