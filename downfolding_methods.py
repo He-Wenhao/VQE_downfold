@@ -103,7 +103,7 @@ def basis_downfolding(ham,overlap_mh, basis_orth, n_folded):
     # save the halmiltonian
     return ham
 
-def E_optimized_basis(**kargs):
+def E_optimized_basis(nbasis=2,**kargs):
     import numpy as np
     from scipy.optimize import minimize
     from scipy.linalg import qr
@@ -113,24 +113,24 @@ def E_optimized_basis(**kargs):
     # initialize initial guess
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
     def cost_function(basis_orth_flat):
-        basis_orth = basis_orth_flat.reshape((n_bf,2))
+        basis_orth = basis_orth_flat.reshape((n_bf,nbasis))
         basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
-        basis_orth = basis_orth[:,:2]
-        ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=2)
+        basis_orth = basis_orth[:,:nbasis]
+        ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
         E = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
-        print(E)
+        #print(E)
         return E
     # minimize cost_func over a SO(n_bf) group
     
     # Initial guess (needs to be orthogonal)
-    Q0 = basis_orth_init[:,:2]
+    Q0 = basis_orth_init[:,:nbasis]
     Q0_flat = Q0.flatten()
     #print('initial guess:',basis_orth_init)
     # Optimization using Nelder-Mead
     result = minimize(cost_function, Q0_flat, method='Nelder-Mead')
 
     # Reshape the result back into a matrix
-    Q_opt = result.x.reshape((n_bf, 2))
+    Q_opt = result.x.reshape((n_bf, nbasis))
     Q_opt, _ = qr(Q_opt)  # Ensure the result is orthogonal
     #print(result)
     #print("Optimal matrix Q:", Q_opt)
@@ -258,8 +258,8 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
             #print('1bd mat:',ham.int_1bd)
             #print('rdm:',rdm)
             #print('FCIvec:',FCIvec)
-            #print('cycle 2:',E,S)
-            print(E,S)
+            print('cycle 2:',E,S)
+            #print(E,S)
             return S, E
         new_result = minimize(lambda x:cost_function_2(x,basis_orth)[0], 0, method='Nelder-Mead')
         old_first_orb_const = first_orb_const
@@ -446,7 +446,7 @@ def dbg_test():
 
 if __name__=='__main__':
     #dbg_test()
-    S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
+    #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    #E_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
+    E_optimized_basis(nbasis=10,atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
