@@ -9,9 +9,13 @@ from pyscf import fci
 from pyscf import gto, scf, ao2mo, cc
 from scipy.linalg import expm
 from numpy import linalg as LA
-import time
 
 import sys
+import torch
+from torch import tensor
+import time
+
+torch.set_printoptions(precision=10)
 
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
 # Hamiltonian = Ham_const + \sum_{ij}(int_1bd)_{ij}c_i^daggerc_j + \sum{ijkl}(int_2bd)_{}ijkl c_i^daggerc_jc_k^daggerc_l    (index order needed checked)
@@ -32,8 +36,8 @@ class Fermi_Ham:
         self._int_2bd_AO = self.mol.intor('int2e')
         self.Ham_const = self.mol.energy_nuc()
         # tensorize
-        self._int_1bd_AO = np.array(self._int_1bd_AO)
-        self._int_2bd_AO = np.array(self._int_2bd_AO)
+        self._int_1bd_AO = torch.tensor(self._int_1bd_AO)
+        self._int_2bd_AO = torch.tensor(self._int_2bd_AO)
     # use a basis to othonormalize it
     # each base vector v is a column vector, basis=[v1,v2,...,vn]
     # we can only keep first n_cut basis vectors
@@ -41,9 +45,9 @@ class Fermi_Ham:
     def calc_Ham_othonormalize(self,basis,ncut):
         cbasis = basis[:,:ncut]
         self.basis = cbasis
-        self.int_1bd = np.einsum('qa,ws,qw -> as',cbasis,cbasis,self._int_1bd_AO)
+        self.int_1bd = torch.einsum('qa,ws,qw -> as',cbasis,cbasis,self._int_1bd_AO)
         
-        self.int_2bd = np.einsum('qa,ws,ed,rf,qwer -> asdf',cbasis,cbasis,cbasis,cbasis,self._int_2bd_AO) 
+        self.int_2bd = torch.einsum('qa,ws,ed,rf,qwer -> asdf',cbasis,cbasis,cbasis,cbasis,self._int_2bd_AO) 
         
     def check_AO(self):
         print('AOs:',self.mol.ao_labels())
@@ -52,7 +56,7 @@ class Fermi_Ham:
 
 def add_spin_2bd(int_2bd):
     dim = int_2bd.shape[0]
-    res = np.zeros((2*dim,2*dim,2*dim,2*dim))
+    res = torch.zeros((2*dim,2*dim,2*dim,2*dim))
     for i1,i2,i3,i4 in itertools.product(range(dim), repeat=4):
         for s1,s2,s3,s4 in itertools.product(range(2), repeat=4):
             if s1 == s4 and s2 == s3:
@@ -61,7 +65,7 @@ def add_spin_2bd(int_2bd):
 
 def add_spin_1bd(int_1bd):
     dim = int_1bd.shape[0]
-    res = np.zeros((2*dim,2*dim))
+    res = torch.zeros((2*dim,2*dim))
     for i1,i2 in itertools.product(range(dim), repeat=2):
         for s1,s2 in itertools.product(range(2), repeat=2):
             if s1 == s2:
@@ -94,14 +98,14 @@ def basis_downfolding_init(fock_method = 'HF',**kargs):
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
     overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
     h_orth = overlap_mh @ fock_AO @ overlap_mh
-    h_orth = np.array(h_orth)
-    overlap_mh = np.array(overlap_mh)
-    _energy, basis_orth = np.linalg.eigh(h_orth)
+    h_orth = torch.tensor(h_orth)
+    overlap_mh = torch.tensor(overlap_mh)
+    _energy, basis_orth = torch.linalg.eigh(h_orth)
     return ham,overlap_mh, basis_orth
 
 # Many body Hamiltonian with downfolding technique
-def basis_downfolding(ham,overlap_mh, basis_orth, n_folded):
-    basis = np.einsum('ij,jk->ik',overlap_mh , basis_orth)
+def basis_downfolding(ham:Fermi_Ham,overlap_mh, basis_orth, n_folded):
+    basis = torch.einsum('ij,jk->ik',overlap_mh , basis_orth)
     #print('my basis:\n',basis)
     #print('basic basis:\n',myhf.mo_coeff)
     # calculate downfolding hamiltonian accroding to basis
@@ -120,17 +124,18 @@ def E_optimized_basis(nbasis=2,**kargs):
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
     def cost_function(basis_orth_flat):
         t0 = time.time() 
-        basis_orth_flat = np.array(basis_orth_flat)
+        basis_orth_flat = torch.tensor(basis_orth_flat)
         t1 = time.time()  # Capture the end time
         basis_orth = basis_orth_flat.reshape((n_bf,nbasis))
         t2 = time.time()  # Capture the end time
-        basis_orth, _R = np.linalg.qr(basis_orth,mode='reduced')    # orthorgonalize basis_orth
+        basis_orth, _R = torch.linalg.qr(basis_orth,mode='reduced')    # orthorgonalize basis_orth
         t3 = time.time()  # Capture the end time
         ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
         t4 = time.time()  # Capture the end time
-        E = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
+        E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method='FCI')
         t5 = time.time()  # Capture the end time
-        print(E)
+        rdm1, rdm2 = properties['rdm1'], properties['rdm2']
+        print('fci energy:',E,'new_energy:',construct_torch_E(rdm1,rdm2,ham))
         #print("t1:{};t2:{};t3:{},t4:{},t5:{}".format(t1-t0,t2-t1,t3-t2,t4-t3,t5-t4))
         return E
     # minimize cost_func over a SO(n_bf) group
@@ -140,7 +145,7 @@ def E_optimized_basis(nbasis=2,**kargs):
     Q0_flat = Q0.flatten()
     #print('initial guess:',basis_orth_init)
     # Optimization using Nelder-Mead
-    result = minimize(cost_function, Q0_flat, method='Nelder-Mead')
+    result = minimize(cost_function, Q0_flat, method='Nelder-Mead',options = {'maxiter': 0})
 
     # Reshape the result back into a matrix
     Q_opt = result.x.reshape((n_bf, nbasis))
@@ -195,7 +200,7 @@ def S_optimized_basis_constraint(fock_method='HF',**kargs):
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=fock_method,**kargs)
     first_orb_const = (basis_orth_init[:,0:1]).flatten()
     def cost_function(basis_orth_flat):
-        basis_orth_flat = np.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
+        basis_orth_flat = torch.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
         basis_orth = basis_orth_flat.reshape((n_bf,2))
         basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
         basis_orth = basis_orth[:,:2]
@@ -229,12 +234,12 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
     # initialize initial guess
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=fock_method,**kargs)
     first_orb_const = (basis_orth_init[:,0:1]).flatten()
-    old_first_orb_const = np.zeros(first_orb_const.shape)
+    old_first_orb_const = torch.zeros(first_orb_const.shape)
     oldx = []
-    while np.linalg.norm( first_orb_const- old_first_orb_const) > 1e-8: # optimize first_orb_const
+    while torch.linalg.norm( first_orb_const- old_first_orb_const) > 1e-8: # optimize first_orb_const
         #print('big cycle')
         def cost_function(basis_orth_flat,first_orb_const):
-            basis_orth_flat = np.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
+            basis_orth_flat = torch.hstack((first_orb_const.reshape(10,1),basis_orth_flat.reshape(10,1))).flatten()
             basis_orth = basis_orth_flat.reshape((n_bf,2))
             basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
             basis_orth = basis_orth[:,:2]
@@ -253,16 +258,16 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
         # Optimization using Nelder-Mead
         result = minimize(lambda x:-cost_function(x,first_orb_const)[0], oldx, method='Nelder-Mead')
         oldx = result.x
-        basis_orth = np.hstack((first_orb_const.reshape(10,1),result.x.reshape((n_bf,1))))
+        basis_orth = torch.hstack((first_orb_const.reshape(10,1),result.x.reshape((n_bf,1))))
         basis_orth, _R = qr(basis_orth)    # orthorgonalize basis_orth
         basis_orth = basis_orth[:,:2]
         # get a optimized new_first_orb_const
-        #sub_basis_orth_flat = np.eye(2).flatten()
-        #sub_basis_orth_flat = np.array([1,2,3,4])
+        #sub_basis_orth_flat = torch.eye(2).flatten()
+        #sub_basis_orth_flat = torch.array([1,2,3,4])
         def cost_function_2(theta,basis_orth):
-            st = np.sin(theta)
-            ct = np.cos(theta)
-            sub_basis_orth = np.array([[ct,st],[-st,ct]]).reshape((2,2))
+            st = torch.sin(theta)
+            ct = torch.cos(theta)
+            sub_basis_orth = torch.array([[ct,st],[-st,ct]]).reshape((2,2))
             #sub_basis_orth, _R = qr(sub_basis_orth)    # orthorgonalize basis_orth
             n_basis_orth = basis_orth @ sub_basis_orth
             ham = basis_downfolding(ham0,overlap_mh, n_basis_orth, n_folded=2)
@@ -277,9 +282,9 @@ def S_optimized_basis_constraint_multi_rounds(fock_method='HF',**kargs):
         new_result = minimize(lambda x:cost_function_2(x,basis_orth)[0], 0, method='Nelder-Mead')
         old_first_orb_const = first_orb_const
         theta = new_result.x
-        st = np.sin(theta)
-        ct = np.cos(theta)
-        sub_basis_orth = np.array([[ct,st],[-st,ct]]).reshape((2,2))
+        st = torch.sin(theta)
+        ct = torch.cos(theta)
+        sub_basis_orth = torch.array([[ct,st],[-st,ct]]).reshape((2,2))
         #sub_basis_orth, _R = qr(sub_basis_orth)
         first_orb_const = (basis_orth @ sub_basis_orth)[:,0:1]
     # Reshape the result back into a matrix
@@ -316,7 +321,7 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
     overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
     h_orth = overlap_mh @ fock_AO @ overlap_mh
-    _energy, basis_orth = np.linalg.eigh(h_orth)
+    _energy, basis_orth = torch.linalg.eigh(h_orth)
     basis = overlap_mh @ basis_orth
     #print('my basis:\n',basis)
     #print('basic basis:\n',myhf.mo_coeff)
@@ -329,11 +334,11 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         Wmat = (overlap - overlap @ fi_orbs @ fi_orbs.T @ overlap)
         # diagonalize W_mat, find maximal eigen states
         #Wmat_orth = overlap_mh @ Wmat @ overlap_mh
-        _energy2, Weig = np.linalg.eigh(-Wmat)
+        _energy2, Weig = torch.linalg.eigh(-Wmat)
         print('energy2:',_energy2)
-        emp_orbs = (np.eye(overlap.shape[0]) - fi_orbs @ fi_orbs.T @ overlap ) @ Weig @ scipy.linalg.fractional_matrix_power(-np.diag(_energy2), (-1/2)) 
+        emp_orbs = (torch.eye(overlap.shape[0]) - fi_orbs @ fi_orbs.T @ overlap ) @ Weig @ scipy.linalg.fractional_matrix_power(-torch.diag(_energy2), (-1/2)) 
         # build new basis
-        QO_basis = np.hstack( (fi_orbs , emp_orbs[:,:overlap.shape[0]-half_nele]) ) 
+        QO_basis = torch.hstack( (fi_orbs , emp_orbs[:,:overlap.shape[0]-half_nele]) ) 
         basis = QO_basis
     # calculate downfolding hamiltonian accroding to basis
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
@@ -366,7 +371,7 @@ def JW_trans(Ham_const,int_1bd,int_2bd):
 def Solve_qubitHam(new_jw_hamiltonian,method):
     assert method=='ED'
     new_jw_matrix = get_sparse_operator(new_jw_hamiltonian)
-    new_eigenenergies = np.linalg.eigvalsh(new_jw_matrix.toarray())
+    new_eigenenergies = torch.linalg.eigvalsh(new_jw_matrix.toarray())
     return new_eigenenergies[0]
 
 # Solve Fermionic Hamiltonian
@@ -396,13 +401,24 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
         mycc.kernel()
     elif method == 'FCI':
         mycc = fci.FCI(mf).run()
+        rdm1_mo = tensor(mycc.make_rdm1(mycc.ci,mycc.norb,mycc.nelec))
+        rdm2_mo = tensor(mycc.make_rdm2(mycc.ci,mycc.norb,mycc.nelec))
     else:
         raise TypeError('method not found')
     t3 = time.time()
+    mo_coeff = tensor(mf.mo_coeff)
+    rdm1_ao = torch.einsum('qa,ws,as->qw',mo_coeff,mo_coeff,rdm1_mo)
+    rdm2_ao = torch.einsum('qa,ws,ed,rf,asdf -> qwer',mo_coeff,mo_coeff,mo_coeff,mo_coeff,rdm2_mo)
     #mycc.kernel()
     #e,v = mycc.ipccsd(nroots=3)
     print("t1:{};t2:{};t3:{}".format(t1-t0,t2-t1,t3-t2))
-    return mycc.e_tot+Ham_const
+    properties = {'rdm1':rdm1_ao,'rdm2':rdm2_ao}
+    return mycc.e_tot+Ham_const, properties
+
+# construct pytorch E
+def construct_torch_E(rdm1,rdm2,ham:Fermi_Ham):
+    E = ham.Ham_const + torch.einsum('ij,ij->',rdm1,ham.int_1bd)+0.5*torch.einsum('ijkl,ijkl->',rdm2,ham.int_2bd)
+    return E
 
 # Solve Fermionic Hamiltonian
 # https://github.com/pyscf/pyscf/blob/master/examples/cc/40-ccsd_custom_hamiltonian.py
@@ -415,7 +431,7 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
 
     mf = scf.RHF(mol)
     mf.get_hcore = lambda *args: int_1bd
-    mf.get_ovlp = lambda *args: np.eye(n)
+    mf.get_ovlp = lambda *args: torch.eye(n)
     mf._eri = ao2mo.restore(8, int_2bd, n)
     mf.kernel()
     mol.incore_anyway = True
@@ -424,19 +440,19 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
     # In PySCF, the customized Hamiltonian needs to be created once in mf object.
     # The Hamiltonian will be used everywhere whenever possible.  Here, the model
     # Hamiltonian is passed to CCSD/FCI object via the mf object.
-    mycc = fci.FCI(mf,np.array([[1.,0.],[0.,1.]])).run()
+    mycc = fci.FCI(mf,torch.array([[1.,0.],[0.,1.]])).run()
     FCIvec = mycc.ci
-    waveFunc = np.zeros((2,2,2,2))
+    waveFunc = torch.zeros((2,2,2,2))
     waveFunc[0,1,0,1] = FCIvec[0,0]
     waveFunc[0,1,1,0] = FCIvec[0,1]
     waveFunc[1,0,0,1] = FCIvec[1,0]
     waveFunc[1,0,1,0] = FCIvec[1,1]
-    waveFunc = np.reshape(waveFunc,(16,1))
+    waveFunc = torch.reshape(waveFunc,(16,1))
     dm = waveFunc @ waveFunc.T
-    dm = np.reshape(dm,(2,2,2,2,2,2,2,2))
-    rdm = np.trace(dm,axis1=1,axis2=5)
-    rdm = np.trace(rdm,axis1=2,axis2=5)
-    rdm = np.reshape(rdm,(4,4))
+    dm = torch.reshape(dm,(2,2,2,2,2,2,2,2))
+    rdm = torch.trace(dm,axis1=1,axis2=5)
+    rdm = torch.trace(rdm,axis1=2,axis2=5)
+    rdm = torch.reshape(rdm,(4,4))
     e, v = LA.eig(rdm)
     def entro(x):
         res = []
@@ -444,8 +460,8 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
             if i == 0.:
                 continue
             else:
-                res.append(-i*np.log(i))
-        return np.sum(res)
+                res.append(-i*torch.log(i))
+        return torch.sum(res)
     S = entro(e)
     #print('total energy:',mycc.e_tot+Ham_const,'; entropy:',S)
     return S ,mycc.e_tot+Ham_const,rdm , FCIvec
