@@ -53,7 +53,7 @@ def get_NN_fock(pyscf_mol):
             ind = range(1,100);
         else:
             ind = range(batch_size[i]);
-        
+        ###############
         mol = pyscf_mol
         # direct sum
         def direct_sum(A, B):
@@ -118,6 +118,7 @@ def get_NN_fock(pyscf_mol):
         paras['h'] = [perm_mat.T @ h @ perm_mat]
         paras['S'] = [perm_mat.T @ S @ perm_mat]
         paras['Enn'] = [E_nn]
+        ###############
         cisolver = fci.FCI(mol, myhf.mo_coeff)
         e, fcivec = cisolver.kernel()
         paras['energy'] = [0]
@@ -153,7 +154,7 @@ def get_NN_fock(pyscf_mol):
         NN_fock = sqrtS @ est.pred.H.detach().numpy()[0] @ sqrtS
         NN_fock = perm_mat @ NN_fock @ perm_mat.T
         print('dbg2:',scipy.linalg.eigvalsh(est.pred.H.detach().numpy()[0]))
-        return NN_fock
+        
         '''
         angstron2Bohr = 1.88973
         h = labels[0]['h'];
@@ -181,6 +182,7 @@ def get_NN_fock(pyscf_mol):
     print('Ehat',Ehat)
     print('E',E)
     print('ENN',E_nn)
+    return NN_fock
 
 if __name__ == '__main__':   
     mol = gto.Mole()
@@ -188,7 +190,7 @@ if __name__ == '__main__':
         atom = 
         '''
         H 0 0 0 
-        H 0 0 0.3
+        H 0 0 0.74
         ''',
         basis = 'cc-pVDZ'
     )
