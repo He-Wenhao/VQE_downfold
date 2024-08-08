@@ -108,7 +108,7 @@ def basis_downfolding(ham,overlap_mh, basis_orth, n_folded):
     ham.calc_Ham_othonormalize(basis,n_folded) # fermionic hamiltonian on new basis
     # save the halmiltonian
     return ham
-
+cost_step = 0
 def E_optimized_basis(nbasis=2,**kargs):
     import numpy as np
     from scipy.optimize import minimize
@@ -118,7 +118,13 @@ def E_optimized_basis(nbasis=2,**kargs):
     n_bf = norbs(**kargs)
     # initialize initial guess
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
+    
+    
     def cost_function(basis_orth_flat):
+        global cost_step
+        print('Step:',cost_step)
+        cost_step += 1
+        
         t0 = time.time() 
         basis_orth_flat = np.array(basis_orth_flat)
         t1 = time.time()  # Capture the end time
@@ -419,6 +425,42 @@ def entropy_entangle(Ham_const,int_1bd,int_2bd,nele,method):
     mf._eri = ao2mo.restore(8, int_2bd, n)
     mf.kernel()
     mol.incore_anyway = True
+    norb = mf.mo_coeff.shape[1]
+
+    # In PySCF, the customized Hamiltonian needs to be created once in mf object.
+    # The Hamiltonian will be used everywhere whenever possible.  Here, the model
+    # Hamiltonian is passed to CCSD/FCI object via the mf object.
+    mycc = fci.FCI(mf,np.array([[1.,0.],[0.,1.]])).run()
+    FCIvec = mycc.ci
+    p_rdm1, p_rdm2 = mycc.make_rdm12(FCIvec, norb, (1,1))
+    o_rdm1 = [p_rdm1[1,1]/2,1-p_rdm1[1,1]/2]
+    
+    def entro(x):
+        res = []
+        for i in x:
+            if i == 0.:
+                continue
+            else:
+                res.append(-i*np.log(i))
+        return np.sum(res)
+    S = entro(o_rdm1)
+    #print('total energy:',mycc.e_tot+Ham_const,'; entropy:',S)
+    return S ,mycc.e_tot+Ham_const,o_rdm1 , FCIvec
+# Solve Fermionic Hamiltonian
+# https://github.com/pyscf/pyscf/blob/master/examples/cc/40-ccsd_custom_hamiltonian.py
+def entropy_entangle_expire(Ham_const,int_1bd,int_2bd,nele,method):
+    assert method == 'FCI'
+    #raise TypeError('not debugged yet')
+    mol = gto.M(verbose=2)
+    n = int_1bd.shape[0]
+    mol.nelectron = nele
+
+    mf = scf.RHF(mol)
+    mf.get_hcore = lambda *args: int_1bd
+    mf.get_ovlp = lambda *args: np.eye(n)
+    mf._eri = ao2mo.restore(8, int_2bd, n)
+    mf.kernel()
+    mol.incore_anyway = True
 
 
     # In PySCF, the customized Hamiltonian needs to be created once in mf object.
@@ -465,9 +507,9 @@ def dbg_test():
 if __name__=='__main__':
     start_time = time.time() 
     #dbg_test()
-    #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
+    S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    E_optimized_basis(nbasis=2,atom='H2.xyz',basis='ccpVDZ')
+    #E_optimized_basis(nbasis=2,atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
     end_time = time.time()  # Capture the end time
     total_time = end_time - start_time  # Calculate the total runtime

@@ -16,7 +16,7 @@ from torch import tensor
 import time
 
 torch.set_printoptions(precision=10)
-
+device = 'cpu'
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
 # Hamiltonian = Ham_const + \sum_{ij}(int_1bd)_{ij}c_i^daggerc_j + \sum{ijkl}(int_2bd)_{}ijkl c_i^daggerc_jc_k^daggerc_l    (index order needed checked)
 
@@ -36,8 +36,8 @@ class Fermi_Ham:
         self._int_2bd_AO = self.mol.intor('int2e')
         self.Ham_const = self.mol.energy_nuc()
         # tensorize
-        self._int_1bd_AO = torch.tensor(self._int_1bd_AO)
-        self._int_2bd_AO = torch.tensor(self._int_2bd_AO)
+        self._int_1bd_AO = torch.tensor(self._int_1bd_AO,device=device)
+        self._int_2bd_AO = torch.tensor(self._int_2bd_AO,device=device)
     # use a basis to othonormalize it
     # each base vector v is a column vector, basis=[v1,v2,...,vn]
     # we can only keep first n_cut basis vectors
@@ -98,8 +98,8 @@ def basis_downfolding_init(fock_method = 'HF',**kargs):
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
     overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
     h_orth = overlap_mh @ fock_AO @ overlap_mh
-    h_orth = torch.tensor(h_orth)
-    overlap_mh = torch.tensor(overlap_mh)
+    h_orth = torch.tensor(h_orth,device=device)
+    overlap_mh = torch.tensor(overlap_mh,device=device)
     _energy, basis_orth = torch.linalg.eigh(h_orth)
     return ham,overlap_mh, basis_orth
 
@@ -124,7 +124,7 @@ def E_optimized_basis(nbasis=2,**kargs):
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
     def cost_function(basis_orth_flat):
         t0 = time.time() 
-        basis_orth_flat = torch.tensor(basis_orth_flat)
+        basis_orth_flat = torch.tensor(basis_orth_flat,device=device)
         t1 = time.time()  # Capture the end time
         basis_orth = basis_orth_flat.reshape((n_bf,nbasis))
         t2 = time.time()  # Capture the end time
@@ -154,6 +154,58 @@ def E_optimized_basis(nbasis=2,**kargs):
     #print("Optimal matrix Q:", Q_opt)
     return result.fun
 
+def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
+    import numpy as np
+    from scipy.optimize import minimize
+    from scipy.linalg import qr
+
+    # dimension before folding
+    n_bf = norbs(**kargs)
+    # initialize initial guess
+    ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
+    def cost_function(basis_orth,method):
+        t0 = time.time() 
+        t1 = time.time()  # Capture the end time
+        t2 = time.time()  # Capture the end time
+        basis_orth, _R = torch.linalg.qr(basis_orth,mode='reduced')    # orthorgonalize basis_orth
+        t3 = time.time()  # Capture the end time
+        ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
+        t4 = time.time()  # Capture the end time
+        E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method=method)
+        t5 = time.time()  # Capture the end time
+        rdm1, rdm2 = properties['rdm1'], properties['rdm2']
+        #print('fci energy:',E,'new_energy:',construct_torch_E(rdm1,rdm2,ham))
+        #print("t1:{};t2:{};t3:{},t4:{},t5:{}".format(t1-t0,t2-t1,t3-t2,t4-t3,t5-t4))
+        return construct_torch_E(rdm1,rdm2,ham)
+    # minimize cost_func over a SO(n_bf) group
+    
+    # Initial guess (needs to be orthogonal)
+    Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+
+    # Initialize the Adam optimizer
+    optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
+    prev_loss = None
+    # Optimization loop
+    for step in range(1000):
+        optimizer.zero_grad()  # Reset the gradients to zero
+
+        loss = cost_function(Q,method)  # Compute the current loss
+
+        loss.backward()        # Perform backpropagation to compute the gradients
+
+        optimizer.step()       # Update parameters using the computed gradients
+
+        print(f"Step {step+1}, Loss: {loss.item()}")
+        if step % 10 == 0:
+            print(flush=True)
+        # Check if the change in loss is smaller than the threshold
+        print('gradient:',abs(Q.grad).sum())
+        if abs(Q.grad).sum() < 1e-5:
+            print(f"Stopping training at epoch {step+1}; Change in loss {abs(prev_loss - loss.item())} is below threshold")
+            break
+
+        prev_loss = loss.item()
+    return Q
 
 def S_optimized_basis(**kargs):
     import numpy as np
@@ -385,9 +437,9 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
     t1 = time.time()
 
     mf = scf.RHF(mol)
-    mf.get_hcore = lambda *args: np.array(int_1bd)
+    mf.get_hcore = lambda *args: int_1bd.detach().numpy()
     mf.get_ovlp = lambda *args: np.eye(n)
-    mf._eri = ao2mo.restore(8, np.array(int_2bd), n)
+    mf._eri = ao2mo.restore(8, int_2bd.detach().numpy(), n)
     mf.kernel()
     mol.incore_anyway = True
     t2 = time.time()
@@ -399,19 +451,21 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
     if method == 'CCSD':
         mycc = cc.CCSD(mf)
         mycc.kernel()
+        rdm1_mo = tensor(mycc.make_rdm1(),device=device)
+        rdm2_mo = tensor(mycc.make_rdm2(),device=device)
     elif method == 'FCI':
         mycc = fci.FCI(mf).run()
-        rdm1_mo = tensor(mycc.make_rdm1(mycc.ci,mycc.norb,mycc.nelec))
-        rdm2_mo = tensor(mycc.make_rdm2(mycc.ci,mycc.norb,mycc.nelec))
+        rdm1_mo = tensor(mycc.make_rdm1(mycc.ci,mycc.norb,mycc.nelec),device=device)
+        rdm2_mo = tensor(mycc.make_rdm2(mycc.ci,mycc.norb,mycc.nelec),device=device)
     else:
         raise TypeError('method not found')
     t3 = time.time()
-    mo_coeff = tensor(mf.mo_coeff)
+    mo_coeff = tensor(mf.mo_coeff,device=device)
     rdm1_ao = torch.einsum('qa,ws,as->qw',mo_coeff,mo_coeff,rdm1_mo)
     rdm2_ao = torch.einsum('qa,ws,ed,rf,asdf -> qwer',mo_coeff,mo_coeff,mo_coeff,mo_coeff,rdm2_mo)
     #mycc.kernel()
     #e,v = mycc.ipccsd(nroots=3)
-    print("t1:{};t2:{};t3:{}".format(t1-t0,t2-t1,t3-t2))
+    #print("t1:{};t2:{};t3:{}".format(t1-t0,t2-t1,t3-t2))
     properties = {'rdm1':rdm1_ao,'rdm2':rdm2_ao}
     return mycc.e_tot+Ham_const, properties
 
@@ -483,7 +537,7 @@ if __name__=='__main__':
     #dbg_test()
     #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    E_optimized_basis(nbasis=2,atom='H2.xyz',basis='ccpVDZ')
+    E_optimized_basis_gradient(nbasis=8,method='FCI',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
     end_time = time.time()  # Capture the end time
     total_time = end_time - start_time  # Calculate the total runtime
