@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from multiprocessing import Pool
 
 def generate_perturbed_chains(num_chains=10, chain_length=5, bond_length=0.74, max_perturb=0.2, x_perturb=0.1):
     """
@@ -29,30 +30,45 @@ def generate_perturbed_chains(num_chains=10, chain_length=5, bond_length=0.74, m
         chains.append(np.array(chain))
     return chains
 
-def write_chains_to_xyz(chains,chain_length, folder="H_chain_xyzs"):
+def write_chain_to_xyz(chain_data):
     """
-    Writes each chain to a separate .xyz file.
+    Writes a single chain to a .xyz file.
+
+    Parameters:
+        chain_data (tuple): Tuple containing chain, chain_length, index, and folder.
+    """
+    chain, chain_length, i, folder = chain_data
+    os.makedirs(os.path.join(folder, f"H{chain_length}/{i}"), exist_ok=True)
+    file_path = os.path.join(folder, f"H{chain_length}/{i}/Hchain.xyz")
+    with open(file_path, "w") as f:
+        f.write(f"{len(chain)}\n")  # Number of atoms
+        f.write(f"\n")  # Comment line
+        for atom in chain:
+            f.write(f"H {atom[0]:.6f} {atom[1]:.6f} {atom[2]:.6f}\n")
+
+def write_chains_to_xyz_parallel(chains, chain_length, folder="H_chain_xyzs", num_processes=10):
+    """
+    Writes chains to .xyz files in parallel.
 
     Parameters:
         chains (list): List of chains where each chain is an array of Cartesian coordinates.
+        chain_length (int): Number of H atoms per chain.
         folder (str): Directory to save the .xyz files.
+        num_processes (int): Number of processes to use for parallelization.
     """
     os.makedirs(folder, exist_ok=True)
-    for i, chain in enumerate(chains):
-        os.makedirs(os.path.join(folder,f"H{chain_length}"), exist_ok=True)
-        os.makedirs(os.path.join(folder,f"H{chain_length}/{i}"), exist_ok=True)
-        file_path = os.path.join(folder, f"H{chain_length}/{i}/Hchain.xyz")
-        with open(file_path, "w") as f:
-            f.write(f"{len(chain)}\n")  # Number of atoms
-            f.write(f"\n")  # Comment line
-            for atom in chain:
-                f.write(f"H {atom[0]:.6f} {atom[1]:.6f} {atom[2]:.6f}\n")
+    # Prepare data for each process
+    chain_data = [(chain, chain_length, i, folder) for i, chain in enumerate(chains)]
+
+    # Use multiprocessing Pool to parallelize writing
+    with Pool(num_processes) as pool:
+        pool.map(write_chain_to_xyz, chain_data)
 
 # Generate chains
-num_chains = 10  # Number of chains
-chain_length = 4  # Number of H atoms per chain
+num_chains = 1000  # Number of chains
+chain_length = 6  # Number of H atoms per chain
 chains = generate_perturbed_chains(num_chains, chain_length)
 
-# Write chains to .xyz files
-write_chains_to_xyz(chains,chain_length)
+# Write chains to .xyz files in parallel
+write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)
 

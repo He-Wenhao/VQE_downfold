@@ -1,3 +1,10 @@
+import os
+import sys
+# Path to exclude
+exclude_path = '/opt/apps/intel19/impi19_0/python3/3.7.0/lib/python3.7/site-packages' 
+# Remove the path if it exists in sys.path
+if exclude_path in sys.path:
+    sys.path.remove(exclude_path)
 import numpy as np
 from pyscf import gto
 import openfermion
@@ -156,7 +163,7 @@ def E_optimized_basis(nbasis=2,**kargs):
     #print("Optimal matrix Q:", Q_opt)
     return result.fun
 
-def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
+def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**kargs):
     import numpy as np
     from scipy.optimize import minimize
     from scipy.linalg import qr
@@ -190,7 +197,6 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
     optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
     prev_loss = None
     # Optimization loop
-    log_file = "opt_log.txt"
     f = open(log_file, 'w')
     for step in range(1000):
         optimizer.zero_grad()  # Reset the gradients to zero
