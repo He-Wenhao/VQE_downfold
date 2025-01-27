@@ -1,0 +1,2 @@
+Step 1, Loss: -0.8903800997690868
+gradient: tensor(1.4159026825, dtype=torch.float64)
