@@ -15,6 +15,8 @@ import torch
 from torch import tensor
 import time
 
+import json
+
 torch.set_printoptions(precision=10)
 device = 'cpu'
 # we describe fermionic hamiltonian as a 3 element tuple: (Ham_const, int_1bd,int_2bd):
@@ -186,6 +188,8 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
     optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
     prev_loss = None
     # Optimization loop
+    log_file = "opt_log.txt"
+    f = open(log_file, 'w')
     for step in range(1000):
         optimizer.zero_grad()  # Reset the gradients to zero
 
@@ -194,17 +198,19 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
         loss.backward()        # Perform backpropagation to compute the gradients
 
         optimizer.step()       # Update parameters using the computed gradients
-
-        print(f"Step {step+1}, Loss: {loss.item()}")
         if step % 10 == 0:
-            print(flush=True)
+            f.write(f"Step {step+1}, Loss: {loss.item()}  ")
+            f.write(f"gradient: {abs(Q.grad).sum()}\n")
+            f.flush()
         # Check if the change in loss is smaller than the threshold
-        print('gradient:',abs(Q.grad).sum())
-        if abs(Q.grad).sum() < 1e-5:
-            print(f"Stopping training at epoch {step+1}; Change in loss {abs(prev_loss - loss.item())} is below threshold")
+        
+        if abs(Q.grad).sum() < 1e-3:
+            f.write(f"convergent at epoch {step+1}; gradient {abs(Q.grad).sum()} is below threshold")
             break
-
         prev_loss = loss.item()
+    else:
+        f.write(f"max iteration achieved")
+    f.close()
     return Q
 
 def S_optimized_basis(**kargs):
@@ -537,8 +543,15 @@ if __name__=='__main__':
     #dbg_test()
     #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    E_optimized_basis_gradient(nbasis=8,method='FCI',atom='H2.xyz',basis='ccpVDZ')
+    E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
+    Q = E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
+    Q_list = Q.transpose(0,1).tolist()
+
+    # Write the list into a JSON file
+    output_file = "opt_basis.json"
+    with open(output_file, "w") as f:
+        json.dump(Q_list, f)
     end_time = time.time()  # Capture the end time
     total_time = end_time - start_time  # Calculate the total runtime
 
