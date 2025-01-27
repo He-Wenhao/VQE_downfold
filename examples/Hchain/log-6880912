@@ -1,0 +1,30 @@
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
