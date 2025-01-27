@@ -122,7 +122,7 @@ def E_optimized_basis(nbasis=2,**kargs):
     
     def cost_function(basis_orth_flat):
         global cost_step
-        print('Step:',cost_step)
+        #print('Step:',cost_step)
         cost_step += 1
         
         t0 = time.time() 
@@ -407,7 +407,7 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
     t3 = time.time()
     #mycc.kernel()
     #e,v = mycc.ipccsd(nroots=3)
-    print("t1:{};t2:{};t3:{}".format(t1-t0,t2-t1,t3-t2))
+    #print("t1:{};t2:{};t3:{}".format(t1-t0,t2-t1,t3-t2))
     return mycc.e_tot+Ham_const
 
 # Solve Fermionic Hamiltonian
@@ -507,9 +507,9 @@ def dbg_test():
 if __name__=='__main__':
     start_time = time.time() 
     #dbg_test()
-    S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
+    #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    #E_optimized_basis(nbasis=2,atom='H2.xyz',basis='ccpVDZ')
+    E_optimized_basis(nbasis=2,atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
     end_time = time.time()  # Capture the end time
     total_time = end_time - start_time  # Calculate the total runtime
