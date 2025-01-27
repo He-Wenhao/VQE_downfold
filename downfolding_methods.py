@@ -356,6 +356,15 @@ def norbs(**kargs):
     overlap = ham.mol.intor('int1e_ovlp')
     return overlap.shape[0]
 
+# return the total number of electrons
+def nelec(**kargs):
+    ham = Fermi_Ham()
+    # initilize with molecule configuration
+    ham.pyscf_init(**kargs)
+    # run HF, get Fock and overlap matrix
+    total_electrons = ham.mol.nelectron
+    return total_electrons
+
 # do jordan wigner transformation
 def JW_trans(Ham_const,int_1bd,int_2bd):
     # add spinint_2bd

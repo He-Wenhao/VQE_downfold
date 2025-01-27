@@ -163,6 +163,8 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
 
     # dimension before folding
     n_bf = norbs(**kargs)
+    nele = nelec(**kargs)
+    assert nele %2 == 0
     # initialize initial guess
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(**kargs)
     def cost_function(basis_orth,method):
@@ -173,7 +175,7 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',**kargs):
         t3 = time.time()  # Capture the end time
         ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
         t4 = time.time()  # Capture the end time
-        E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([1,1]),method=method)
+        E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([nele//2,nele//2]),method=method)
         t5 = time.time()  # Capture the end time
         rdm1, rdm2 = properties['rdm1'], properties['rdm2']
         #print('fci energy:',E,'new_energy:',construct_torch_E(rdm1,rdm2,ham))
@@ -413,6 +415,15 @@ def norbs(**kargs):
     overlap = ham.mol.intor('int1e_ovlp')
     return overlap.shape[0]
 
+# return the total number of electrons
+def nelec(**kargs):
+    ham = Fermi_Ham()
+    # initilize with molecule configuration
+    ham.pyscf_init(**kargs)
+    # run HF, get Fock and overlap matrix
+    total_electrons = ham.mol.nelectron
+    return total_electrons
+
 # do jordan wigner transformation
 def JW_trans(Ham_const,int_1bd,int_2bd):
     # add spinint_2bd
@@ -543,7 +554,7 @@ if __name__=='__main__':
     #dbg_test()
     #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis_constraint(fock_method='HF',atom='H2.xyz',basis='ccpVDZ')
-    E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
+    #E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
     Q = E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
     Q_list = Q.transpose(0,1).tolist()
