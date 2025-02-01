@@ -387,6 +387,8 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
     overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
     h_orth = overlap_mh @ fock_AO @ overlap_mh
+    overlap_mh = torch.tensor(overlap_mh,device=device)
+    h_orth = torch.tensor(h_orth,device=device)
     _energy, basis_orth = torch.linalg.eigh(h_orth)
     basis = overlap_mh @ basis_orth
     #print('my basis:\n',basis)

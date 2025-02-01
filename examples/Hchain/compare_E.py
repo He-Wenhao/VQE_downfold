@@ -5,7 +5,7 @@ import os
 import argparse
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(script_dir, "../.."))
-from downfolding_methods import nelec, norbs, fock_downfolding, Solve_fermionHam
+from downfolding_methods_pytorch import nelec, norbs, fock_downfolding, Solve_fermionHam
 
 def grep_opt_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res_E.json'):
     start_time = time.time()
@@ -42,14 +42,13 @@ def df_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res_E.
     n_folded = norbs(atom=xyzfile, basis='sto-3G')
     ham = fock_downfolding(n_folded=n_folded, fock_method=method, QO=False, atom=xyzfile, basis='ccpVDZ')
     d_time = time.time()
-    E = Solve_fermionHam(ham.Ham_const, ham.int_1bd, ham.int_2bd, nele=nelec(atom=xyzfile, basis='sto-3G'), method='FCI')
+    E = Solve_fermionHam(ham.Ham_const, ham.int_1bd, ham.int_2bd, nele=nelec(atom=xyzfile, basis='sto-3G'), method='FCI')[0]
     
     try:
         with open(res_file, 'r') as f:
             res_data = json.load(f)
     except FileNotFoundError:
         res_data = {}
-
     res_data[method + '_E'] = E
 
     with open(res_file, 'w') as f:
@@ -65,7 +64,7 @@ def sto3G_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res
     n_folded = norbs(atom=xyzfile, basis='sto-3G')
     ham = fock_downfolding(n_folded=n_folded, fock_method='HF', QO=False, atom=xyzfile, basis='sto-3G')
     d_time = time.time()
-    E = Solve_fermionHam(ham.Ham_const, ham.int_1bd, ham.int_2bd, nele=nelec(atom=xyzfile, basis='sto-3G'), method='FCI')
+    E = Solve_fermionHam(ham.Ham_const, ham.int_1bd, ham.int_2bd, nele=nelec(atom=xyzfile, basis='sto-3G'), method='FCI')[0]
     
     try:
         with open(res_file, 'r') as f:
