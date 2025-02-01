@@ -66,7 +66,7 @@ def write_chains_to_xyz_parallel(chains, chain_length, folder="H_chain_xyzs", nu
 
 # Generate chains
 num_chains = 1000  # Number of chains
-chain_length = 6  # Number of H atoms per chain
+chain_length = 8  # Number of H atoms per chain
 chains = generate_perturbed_chains(num_chains, chain_length)
 
 # Write chains to .xyz files in parallel

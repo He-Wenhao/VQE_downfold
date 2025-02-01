@@ -1,0 +1,2031 @@
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
+Overwritten attributes  get_hcore get_ovlp  of <class 'pyscf.scf.hf.RHF'>
+700 start
+The total running time of the script was: 54.57 seconds
+701 start
+The total running time of the script was: 40.92 seconds
+702 start
+The total running time of the script was: 47.03 seconds
+703 start
+The total running time of the script was: 43.52 seconds
+704 start
+The total running time of the script was: 40.00 seconds
+705 start
+The total running time of the script was: 53.66 seconds
+706 start
+The total running time of the script was: 41.40 seconds
+707 start
+The total running time of the script was: 49.22 seconds
+708 start
+The total running time of the script was: 43.31 seconds
+709 start
+The total running time of the script was: 41.09 seconds
+710 start
+The total running time of the script was: 34.53 seconds
+711 start
+The total running time of the script was: 49.15 seconds
+712 start
+The total running time of the script was: 48.29 seconds
+713 start
+The total running time of the script was: 44.51 seconds
+714 start
+The total running time of the script was: 43.23 seconds
+715 start
+The total running time of the script was: 39.36 seconds
+716 start
+The total running time of the script was: 44.53 seconds
+717 start
+The total running time of the script was: 44.56 seconds
+718 start
+The total running time of the script was: 46.82 seconds
+719 start
+The total running time of the script was: 45.74 seconds
+720 start
+The total running time of the script was: 28.31 seconds
+721 start
+The total running time of the script was: 47.12 seconds
+722 start
+The total running time of the script was: 49.49 seconds
+723 start
+The total running time of the script was: 54.58 seconds
+724 start
+The total running time of the script was: 52.55 seconds
+725 start
+The total running time of the script was: 48.25 seconds
+726 start
+The total running time of the script was: 41.22 seconds
+727 start
+The total running time of the script was: 57.98 seconds
+728 start
+The total running time of the script was: 40.02 seconds
+729 start
+The total running time of the script was: 34.19 seconds
+730 start
+The total running time of the script was: 42.17 seconds
+731 start
+The total running time of the script was: 56.60 seconds
+732 start
+The total running time of the script was: 57.90 seconds
+733 start
+The total running time of the script was: 52.11 seconds
+734 start
+The total running time of the script was: 45.66 seconds
+735 start
+The total running time of the script was: 41.74 seconds
+736 start
+The total running time of the script was: 41.37 seconds
+737 start
+The total running time of the script was: 41.29 seconds
+738 start
+The total running time of the script was: 49.12 seconds
+739 start
+The total running time of the script was: 43.33 seconds
+740 start
+The total running time of the script was: 36.41 seconds
+741 start
+The total running time of the script was: 38.56 seconds
+742 start
+The total running time of the script was: 58.90 seconds
+743 start
+The total running time of the script was: 41.73 seconds
+744 start
+The total running time of the script was: 46.23 seconds
+745 start
+The total running time of the script was: 71.63 seconds
+746 start
+The total running time of the script was: 56.90 seconds
+747 start
+The total running time of the script was: 39.97 seconds
+748 start
+The total running time of the script was: 38.46 seconds
+749 start
+The total running time of the script was: 33.82 seconds
+750 start
+The total running time of the script was: 42.63 seconds
+751 start
+The total running time of the script was: 41.48 seconds
+752 start
+The total running time of the script was: 36.67 seconds
+753 start
+The total running time of the script was: 45.84 seconds
+754 start
+The total running time of the script was: 51.37 seconds
+755 start
+The total running time of the script was: 71.62 seconds
+756 start
+The total running time of the script was: 45.73 seconds
+757 start
+The total running time of the script was: 30.72 seconds
+758 start
+The total running time of the script was: 47.29 seconds
+759 start
+The total running time of the script was: 34.81 seconds
+760 start
+The total running time of the script was: 34.21 seconds
+761 start
+The total running time of the script was: 43.26 seconds
+762 start
+The total running time of the script was: 49.15 seconds
+763 start
+The total running time of the script was: 35.41 seconds
+764 start
+The total running time of the script was: 54.33 seconds
+765 start
+The total running time of the script was: 54.11 seconds
+766 start
+The total running time of the script was: 37.94 seconds
+767 start
+The total running time of the script was: 48.03 seconds
+768 start
+The total running time of the script was: 59.55 seconds
+769 start
+The total running time of the script was: 43.92 seconds
+770 start
+The total running time of the script was: 39.61 seconds
+771 start
+The total running time of the script was: 46.27 seconds
+772 start
+The total running time of the script was: 55.84 seconds
+773 start
+The total running time of the script was: 48.15 seconds
+774 start
+The total running time of the script was: 48.06 seconds
+775 start
+The total running time of the script was: 45.19 seconds
+776 start
+The total running time of the script was: 44.30 seconds
+777 start
+The total running time of the script was: 53.54 seconds
+778 start
+The total running time of the script was: 38.82 seconds
+779 start
+The total running time of the script was: 62.70 seconds
+780 start
+The total running time of the script was: 36.35 seconds
+781 start
+The total running time of the script was: 64.53 seconds
+782 start
+The total running time of the script was: 34.53 seconds
+783 start
+The total running time of the script was: 34.05 seconds
+784 start
+The total running time of the script was: 52.46 seconds
+785 start
+The total running time of the script was: 38.22 seconds
+786 start
+The total running time of the script was: 40.83 seconds
+787 start
+The total running time of the script was: 60.59 seconds
+788 start
+The total running time of the script was: 43.15 seconds
+789 start
+The total running time of the script was: 36.97 seconds
+790 start
+The total running time of the script was: 42.18 seconds
+791 start
+The total running time of the script was: 48.48 seconds
+792 start
+The total running time of the script was: 45.55 seconds
+793 start
+The total running time of the script was: 34.04 seconds
+794 start
+The total running time of the script was: 56.36 seconds
+795 start
+The total running time of the script was: 52.69 seconds
+796 start
+The total running time of the script was: 38.39 seconds
+797 start
+The total running time of the script was: 46.62 seconds
+798 start
+The total running time of the script was: 49.75 seconds
+799 start
+The total running time of the script was: 40.32 seconds
+200 start
+The total running time of the script was: 57.33 seconds
+201 start
+The total running time of the script was: 81.01 seconds
+202 start
+The total running time of the script was: 45.64 seconds
+203 start
+The total running time of the script was: 42.87 seconds
+204 start
+The total running time of the script was: 38.28 seconds
+205 start
+The total running time of the script was: 49.96 seconds
+206 start
+The total running time of the script was: 33.83 seconds
+207 start
+The total running time of the script was: 61.37 seconds
+208 start
+The total running time of the script was: 41.23 seconds
+209 start
+The total running time of the script was: 56.24 seconds
+210 start
+The total running time of the script was: 47.62 seconds
+211 start
+The total running time of the script was: 42.76 seconds
+212 start
+The total running time of the script was: 38.39 seconds
+213 start
+The total running time of the script was: 47.37 seconds
+214 start
+The total running time of the script was: 30.39 seconds
+215 start
+The total running time of the script was: 47.36 seconds
+216 start
+The total running time of the script was: 60.12 seconds
+217 start
+The total running time of the script was: 56.11 seconds
+218 start
+The total running time of the script was: 46.65 seconds
+219 start
+The total running time of the script was: 45.93 seconds
+220 start
+The total running time of the script was: 46.42 seconds
+221 start
+The total running time of the script was: 39.91 seconds
+222 start
+The total running time of the script was: 51.51 seconds
+223 start
+The total running time of the script was: 38.41 seconds
+224 start
+The total running time of the script was: 44.20 seconds
+225 start
+The total running time of the script was: 47.16 seconds
+226 start
+The total running time of the script was: 37.20 seconds
+227 start
+The total running time of the script was: 57.19 seconds
+228 start
+The total running time of the script was: 63.78 seconds
+229 start
+The total running time of the script was: 60.36 seconds
+230 start
+The total running time of the script was: 41.48 seconds
+231 start
+The total running time of the script was: 44.64 seconds
+232 start
+The total running time of the script was: 43.56 seconds
+233 start
+The total running time of the script was: 63.94 seconds
+234 start
+The total running time of the script was: 35.10 seconds
+235 start
+The total running time of the script was: 42.78 seconds
+236 start
+The total running time of the script was: 35.53 seconds
+237 start
+The total running time of the script was: 41.32 seconds
+238 start
+The total running time of the script was: 45.26 seconds
+239 start
+The total running time of the script was: 31.23 seconds
+240 start
+The total running time of the script was: 52.69 seconds
+241 start
+The total running time of the script was: 44.21 seconds
+242 start
+The total running time of the script was: 51.97 seconds
+243 start
+The total running time of the script was: 33.23 seconds
+244 start
+The total running time of the script was: 61.85 seconds
+245 start
+The total running time of the script was: 54.17 seconds
+246 start
+The total running time of the script was: 44.16 seconds
+247 start
+The total running time of the script was: 33.41 seconds
+248 start
+The total running time of the script was: 42.18 seconds
+249 start
+The total running time of the script was: 45.51 seconds
+250 start
+The total running time of the script was: 61.30 seconds
+251 start
+The total running time of the script was: 51.03 seconds
+252 start
+The total running time of the script was: 52.76 seconds
+253 start
+The total running time of the script was: 38.49 seconds
+254 start
+The total running time of the script was: 42.68 seconds
+255 start
+The total running time of the script was: 73.69 seconds
+256 start
+The total running time of the script was: 55.78 seconds
+257 start
+The total running time of the script was: 43.03 seconds
+258 start
+The total running time of the script was: 59.99 seconds
+259 start
+The total running time of the script was: 49.50 seconds
+260 start
+The total running time of the script was: 44.51 seconds
+261 start
+The total running time of the script was: 43.14 seconds
+262 start
+The total running time of the script was: 40.03 seconds
+263 start
+The total running time of the script was: 48.22 seconds
+264 start
+The total running time of the script was: 48.94 seconds
+265 start
+The total running time of the script was: 48.87 seconds
+266 start
+The total running time of the script was: 61.51 seconds
+267 start
+The total running time of the script was: 43.66 seconds
+268 start
+The total running time of the script was: 34.79 seconds
+269 start
+The total running time of the script was: 43.04 seconds
+270 start
+The total running time of the script was: 42.48 seconds
+271 start
+The total running time of the script was: 38.00 seconds
+272 start
+The total running time of the script was: 45.28 seconds
+273 start
+The total running time of the script was: 52.68 seconds
+274 start
+The total running time of the script was: 41.25 seconds
+275 start
+The total running time of the script was: 74.27 seconds
+276 start
+The total running time of the script was: 38.32 seconds
+277 start
+The total running time of the script was: 33.58 seconds
+278 start
+The total running time of the script was: 88.33 seconds
+279 start
+The total running time of the script was: 34.56 seconds
+280 start
+The total running time of the script was: 37.10 seconds
+281 start
+The total running time of the script was: 45.48 seconds
+282 start
+The total running time of the script was: 35.59 seconds
+283 start
+The total running time of the script was: 43.64 seconds
+284 start
+The total running time of the script was: 56.77 seconds
+285 start
+The total running time of the script was: 33.89 seconds
+286 start
+The total running time of the script was: 36.47 seconds
+287 start
+The total running time of the script was: 56.30 seconds
+288 start
+The total running time of the script was: 36.09 seconds
+289 start
+The total running time of the script was: 50.31 seconds
+290 start
+The total running time of the script was: 36.67 seconds
+291 start
+The total running time of the script was: 53.27 seconds
+292 start
+The total running time of the script was: 54.71 seconds
+293 start
+The total running time of the script was: 45.05 seconds
+294 start
+The total running time of the script was: 39.70 seconds
+295 start
+The total running time of the script was: 53.65 seconds
+296 start
+The total running time of the script was: 39.48 seconds
+297 start
+The total running time of the script was: 44.34 seconds
+298 start
+The total running time of the script was: 43.38 seconds
+299 start
+The total running time of the script was: 44.80 seconds
+600 start
+The total running time of the script was: 65.36 seconds
+601 start
+The total running time of the script was: 53.03 seconds
+602 start
+The total running time of the script was: 56.73 seconds
+603 start
+The total running time of the script was: 51.73 seconds
+604 start
+The total running time of the script was: 38.93 seconds
+605 start
+The total running time of the script was: 40.39 seconds
+606 start
+The total running time of the script was: 36.96 seconds
+607 start
+The total running time of the script was: 34.32 seconds
+608 start
+The total running time of the script was: 38.46 seconds
+609 start
+The total running time of the script was: 49.55 seconds
+610 start
+The total running time of the script was: 56.02 seconds
+611 start
+The total running time of the script was: 42.16 seconds
+612 start
+The total running time of the script was: 75.86 seconds
+613 start
+The total running time of the script was: 50.63 seconds
+614 start
+The total running time of the script was: 48.54 seconds
+615 start
+The total running time of the script was: 51.66 seconds
+616 start
+The total running time of the script was: 63.95 seconds
+617 start
+The total running time of the script was: 41.10 seconds
+618 start
+The total running time of the script was: 40.72 seconds
+619 start
+The total running time of the script was: 59.37 seconds
+620 start
+The total running time of the script was: 58.20 seconds
+621 start
+The total running time of the script was: 45.23 seconds
+622 start
+The total running time of the script was: 45.27 seconds
+623 start
+The total running time of the script was: 54.27 seconds
+624 start
+The total running time of the script was: 41.65 seconds
+625 start
+The total running time of the script was: 44.16 seconds
+626 start
+The total running time of the script was: 58.21 seconds
+627 start
+The total running time of the script was: 46.30 seconds
+628 start
+The total running time of the script was: 52.48 seconds
+629 start
+The total running time of the script was: 68.51 seconds
+630 start
+The total running time of the script was: 32.92 seconds
+631 start
+The total running time of the script was: 40.82 seconds
+632 start
+The total running time of the script was: 43.01 seconds
+633 start
+The total running time of the script was: 42.27 seconds
+634 start
+The total running time of the script was: 40.28 seconds
+635 start
+The total running time of the script was: 38.55 seconds
+636 start
+The total running time of the script was: 28.63 seconds
+637 start
+The total running time of the script was: 46.82 seconds
+638 start
+The total running time of the script was: 37.62 seconds
+639 start
+The total running time of the script was: 76.09 seconds
+640 start
+The total running time of the script was: 43.65 seconds
+641 start
+The total running time of the script was: 31.90 seconds
+642 start
+The total running time of the script was: 44.04 seconds
+643 start
+The total running time of the script was: 47.06 seconds
+644 start
+The total running time of the script was: 34.23 seconds
+645 start
+The total running time of the script was: 39.38 seconds
+646 start
+The total running time of the script was: 56.29 seconds
+647 start
+The total running time of the script was: 43.56 seconds
+648 start
+The total running time of the script was: 41.12 seconds
+649 start
+The total running time of the script was: 49.47 seconds
+650 start
+The total running time of the script was: 48.32 seconds
+651 start
+The total running time of the script was: 63.92 seconds
+652 start
+The total running time of the script was: 41.28 seconds
+653 start
+The total running time of the script was: 43.95 seconds
+654 start
+The total running time of the script was: 36.86 seconds
+655 start
+The total running time of the script was: 38.27 seconds
+656 start
+The total running time of the script was: 44.81 seconds
+657 start
+The total running time of the script was: 48.24 seconds
+658 start
+The total running time of the script was: 32.39 seconds
+659 start
+The total running time of the script was: 52.57 seconds
+660 start
+The total running time of the script was: 42.42 seconds
+661 start
+The total running time of the script was: 44.68 seconds
+662 start
+The total running time of the script was: 64.15 seconds
+663 start
+The total running time of the script was: 28.73 seconds
+664 start
+The total running time of the script was: 47.39 seconds
+665 start
+The total running time of the script was: 54.80 seconds
+666 start
+The total running time of the script was: 42.24 seconds
+667 start
+The total running time of the script was: 45.74 seconds
+668 start
+The total running time of the script was: 46.65 seconds
+669 start
+The total running time of the script was: 38.90 seconds
+670 start
+The total running time of the script was: 44.07 seconds
+671 start
+The total running time of the script was: 53.65 seconds
+672 start
+The total running time of the script was: 49.00 seconds
+673 start
+The total running time of the script was: 41.45 seconds
+674 start
+The total running time of the script was: 44.89 seconds
+675 start
+The total running time of the script was: 40.06 seconds
+676 start
+The total running time of the script was: 52.93 seconds
+677 start
+The total running time of the script was: 42.70 seconds
+678 start
+The total running time of the script was: 58.72 seconds
+679 start
+The total running time of the script was: 61.52 seconds
+680 start
+The total running time of the script was: 56.01 seconds
+681 start
+The total running time of the script was: 49.26 seconds
+682 start
+The total running time of the script was: 60.88 seconds
+683 start
+The total running time of the script was: 39.05 seconds
+684 start
+The total running time of the script was: 59.55 seconds
+685 start
+The total running time of the script was: 48.30 seconds
+686 start
+The total running time of the script was: 38.75 seconds
+687 start
+The total running time of the script was: 82.86 seconds
+688 start
+The total running time of the script was: 42.27 seconds
+689 start
+The total running time of the script was: 49.53 seconds
+690 start
+The total running time of the script was: 55.28 seconds
+691 start
+The total running time of the script was: 59.22 seconds
+692 start
+The total running time of the script was: 47.81 seconds
+693 start
+The total running time of the script was: 40.83 seconds
+694 start
+The total running time of the script was: 30.30 seconds
+695 start
+The total running time of the script was: 47.24 seconds
+696 start
+The total running time of the script was: 44.83 seconds
+697 start
+The total running time of the script was: 43.80 seconds
+698 start
+The total running time of the script was: 41.78 seconds
+699 start
+The total running time of the script was: 37.67 seconds
+100 start
+The total running time of the script was: 69.38 seconds
+101 start
+The total running time of the script was: 48.72 seconds
+102 start
+The total running time of the script was: 45.43 seconds
+103 start
+The total running time of the script was: 43.10 seconds
+104 start
+The total running time of the script was: 41.68 seconds
+105 start
+The total running time of the script was: 49.91 seconds
+106 start
+The total running time of the script was: 37.44 seconds
+107 start
+The total running time of the script was: 37.18 seconds
+108 start
+The total running time of the script was: 41.43 seconds
+109 start
+The total running time of the script was: 49.28 seconds
+110 start
+The total running time of the script was: 51.72 seconds
+111 start
+The total running time of the script was: 37.15 seconds
+112 start
+The total running time of the script was: 45.16 seconds
+113 start
+The total running time of the script was: 51.78 seconds
+114 start
+The total running time of the script was: 39.24 seconds
+115 start
+The total running time of the script was: 47.60 seconds
+116 start
+The total running time of the script was: 30.35 seconds
+117 start
+The total running time of the script was: 32.49 seconds
+118 start
+The total running time of the script was: 40.33 seconds
+119 start
+The total running time of the script was: 42.51 seconds
+120 start
+The total running time of the script was: 56.37 seconds
+121 start
+The total running time of the script was: 32.54 seconds
+122 start
+The total running time of the script was: 37.74 seconds
+123 start
+The total running time of the script was: 61.95 seconds
+124 start
+The total running time of the script was: 49.45 seconds
+125 start
+The total running time of the script was: 35.66 seconds
+126 start
+The total running time of the script was: 60.83 seconds
+127 start
+The total running time of the script was: 44.65 seconds
+128 start
+The total running time of the script was: 42.09 seconds
+129 start
+The total running time of the script was: 45.39 seconds
+130 start
+The total running time of the script was: 30.40 seconds
+131 start
+The total running time of the script was: 41.29 seconds
+132 start
+The total running time of the script was: 38.30 seconds
+133 start
+The total running time of the script was: 53.90 seconds
+134 start
+The total running time of the script was: 43.33 seconds
+135 start
+The total running time of the script was: 48.30 seconds
+136 start
+The total running time of the script was: 43.63 seconds
+137 start
+The total running time of the script was: 44.58 seconds
+138 start
+The total running time of the script was: 33.45 seconds
+139 start
+The total running time of the script was: 48.75 seconds
+140 start
+The total running time of the script was: 46.15 seconds
+141 start
+The total running time of the script was: 39.26 seconds
+142 start
+The total running time of the script was: 58.38 seconds
+143 start
+The total running time of the script was: 40.22 seconds
+144 start
+The total running time of the script was: 71.93 seconds
+145 start
+The total running time of the script was: 59.69 seconds
+146 start
+The total running time of the script was: 50.89 seconds
+147 start
+The total running time of the script was: 90.38 seconds
+148 start
+The total running time of the script was: 42.88 seconds
+149 start
+The total running time of the script was: 51.94 seconds
+150 start
+The total running time of the script was: 56.66 seconds
+151 start
+The total running time of the script was: 60.10 seconds
+152 start
+The total running time of the script was: 51.31 seconds
+153 start
+The total running time of the script was: 62.78 seconds
+154 start
+The total running time of the script was: 42.09 seconds
+155 start
+The total running time of the script was: 28.94 seconds
+156 start
+The total running time of the script was: 45.81 seconds
+157 start
+The total running time of the script was: 62.23 seconds
+158 start
+The total running time of the script was: 48.73 seconds
+159 start
+The total running time of the script was: 36.93 seconds
+160 start
+The total running time of the script was: 47.44 seconds
+161 start
+The total running time of the script was: 52.30 seconds
+162 start
+The total running time of the script was: 38.31 seconds
+163 start
+The total running time of the script was: 41.91 seconds
+164 start
+The total running time of the script was: 51.64 seconds
+165 start
+The total running time of the script was: 50.53 seconds
+166 start
+The total running time of the script was: 45.06 seconds
+167 start
+The total running time of the script was: 39.68 seconds
+168 start
+The total running time of the script was: 45.64 seconds
+169 start
+The total running time of the script was: 56.02 seconds
+170 start
+The total running time of the script was: 48.64 seconds
+171 start
+The total running time of the script was: 40.84 seconds
+172 start
+The total running time of the script was: 37.82 seconds
+173 start
+The total running time of the script was: 46.20 seconds
+174 start
+The total running time of the script was: 50.22 seconds
+175 start
+The total running time of the script was: 43.40 seconds
+176 start
+The total running time of the script was: 54.41 seconds
+177 start
+The total running time of the script was: 55.75 seconds
+178 start
+The total running time of the script was: 50.15 seconds
+179 start
+The total running time of the script was: 63.88 seconds
+180 start
+The total running time of the script was: 36.39 seconds
+181 start
+The total running time of the script was: 41.55 seconds
+182 start
+The total running time of the script was: 51.57 seconds
+183 start
+The total running time of the script was: 61.40 seconds
+184 start
+The total running time of the script was: 58.23 seconds
+185 start
+The total running time of the script was: 40.29 seconds
+186 start
+The total running time of the script was: 45.42 seconds
+187 start
+The total running time of the script was: 45.07 seconds
+188 start
+The total running time of the script was: 54.19 seconds
+189 start
+The total running time of the script was: 39.52 seconds
+190 start
+The total running time of the script was: 37.94 seconds
+191 start
+The total running time of the script was: 72.71 seconds
+192 start
+The total running time of the script was: 48.62 seconds
+193 start
+The total running time of the script was: 61.98 seconds
+194 start
+The total running time of the script was: 54.59 seconds
+195 start
+The total running time of the script was: 44.88 seconds
+196 start
+The total running time of the script was: 45.15 seconds
+197 start
+The total running time of the script was: 43.80 seconds
+198 start
+The total running time of the script was: 46.64 seconds
+199 start
+The total running time of the script was: 50.71 seconds
+500 start
+The total running time of the script was: 64.13 seconds
+501 start
+The total running time of the script was: 49.13 seconds
+502 start
+The total running time of the script was: 57.40 seconds
+503 start
+The total running time of the script was: 58.29 seconds
+504 start
+The total running time of the script was: 44.78 seconds
+505 start
+The total running time of the script was: 62.59 seconds
+506 start
+The total running time of the script was: 52.66 seconds
+507 start
+The total running time of the script was: 65.55 seconds
+508 start
+The total running time of the script was: 52.91 seconds
+509 start
+The total running time of the script was: 54.88 seconds
+510 start
+The total running time of the script was: 39.22 seconds
+511 start
+The total running time of the script was: 45.70 seconds
+512 start
+The total running time of the script was: 48.82 seconds
+513 start
+The total running time of the script was: 48.45 seconds
+514 start
+The total running time of the script was: 46.89 seconds
+515 start
+The total running time of the script was: 31.55 seconds
+516 start
+The total running time of the script was: 45.74 seconds
+517 start
+The total running time of the script was: 42.22 seconds
+518 start
+The total running time of the script was: 40.78 seconds
+519 start
+The total running time of the script was: 44.40 seconds
+520 start
+The total running time of the script was: 34.70 seconds
+521 start
+The total running time of the script was: 29.35 seconds
+522 start
+The total running time of the script was: 39.34 seconds
+523 start
+The total running time of the script was: 45.28 seconds
+524 start
+The total running time of the script was: 54.73 seconds
+525 start
+The total running time of the script was: 46.03 seconds
+526 start
+The total running time of the script was: 39.99 seconds
+527 start
+The total running time of the script was: 54.39 seconds
+528 start
+The total running time of the script was: 52.05 seconds
+529 start
+The total running time of the script was: 46.11 seconds
+530 start
+The total running time of the script was: 40.76 seconds
+531 start
+The total running time of the script was: 53.39 seconds
+532 start
+The total running time of the script was: 44.65 seconds
+533 start
+The total running time of the script was: 43.67 seconds
+534 start
+The total running time of the script was: 48.29 seconds
+535 start
+The total running time of the script was: 48.85 seconds
+536 start
+The total running time of the script was: 56.91 seconds
+537 start
+The total running time of the script was: 45.68 seconds
+538 start
+The total running time of the script was: 38.91 seconds
+539 start
+The total running time of the script was: 61.78 seconds
+540 start
+The total running time of the script was: 51.68 seconds
+541 start
+The total running time of the script was: 44.25 seconds
+542 start
+The total running time of the script was: 36.03 seconds
+543 start
+The total running time of the script was: 42.99 seconds
+544 start
+The total running time of the script was: 46.35 seconds
+545 start
+The total running time of the script was: 54.00 seconds
+546 start
+The total running time of the script was: 49.91 seconds
+547 start
+The total running time of the script was: 46.41 seconds
+548 start
+The total running time of the script was: 40.49 seconds
+549 start
+The total running time of the script was: 53.57 seconds
+550 start
+The total running time of the script was: 47.40 seconds
+551 start
+The total running time of the script was: 39.28 seconds
+552 start
+The total running time of the script was: 41.59 seconds
+553 start
+The total running time of the script was: 41.30 seconds
+554 start
+The total running time of the script was: 48.86 seconds
+555 start
+The total running time of the script was: 44.37 seconds
+556 start
+The total running time of the script was: 58.70 seconds
+557 start
+The total running time of the script was: 63.64 seconds
+558 start
+The total running time of the script was: 46.19 seconds
+559 start
+The total running time of the script was: 46.36 seconds
+560 start
+The total running time of the script was: 45.88 seconds
+561 start
+The total running time of the script was: 52.87 seconds
+562 start
+The total running time of the script was: 42.84 seconds
+563 start
+The total running time of the script was: 53.88 seconds
+564 start
+The total running time of the script was: 55.65 seconds
+565 start
+The total running time of the script was: 33.88 seconds
+566 start
+The total running time of the script was: 50.12 seconds
+567 start
+The total running time of the script was: 44.92 seconds
+568 start
+The total running time of the script was: 74.35 seconds
+569 start
+The total running time of the script was: 54.82 seconds
+570 start
+The total running time of the script was: 45.22 seconds
+571 start
+The total running time of the script was: 38.62 seconds
+572 start
+The total running time of the script was: 48.62 seconds
+573 start
+The total running time of the script was: 51.80 seconds
+574 start
+The total running time of the script was: 41.64 seconds
+575 start
+The total running time of the script was: 54.69 seconds
+576 start
+The total running time of the script was: 42.92 seconds
+577 start
+The total running time of the script was: 58.28 seconds
+578 start
+The total running time of the script was: 48.62 seconds
+579 start
+The total running time of the script was: 47.08 seconds
+580 start
+The total running time of the script was: 44.13 seconds
+581 start
+The total running time of the script was: 40.85 seconds
+582 start
+The total running time of the script was: 44.32 seconds
+583 start
+The total running time of the script was: 42.82 seconds
+584 start
+The total running time of the script was: 55.80 seconds
+585 start
+The total running time of the script was: 48.68 seconds
+586 start
+The total running time of the script was: 59.97 seconds
+587 start
+The total running time of the script was: 32.23 seconds
+588 start
+The total running time of the script was: 43.76 seconds
+589 start
+The total running time of the script was: 47.84 seconds
+590 start
+The total running time of the script was: 47.68 seconds
+591 start
+The total running time of the script was: 52.65 seconds
+592 start
+The total running time of the script was: 53.09 seconds
+593 start
+The total running time of the script was: 45.03 seconds
+594 start
+The total running time of the script was: 39.55 seconds
+595 start
+The total running time of the script was: 43.29 seconds
+596 start
+The total running time of the script was: 38.89 seconds
+597 start
+The total running time of the script was: 58.34 seconds
+598 start
+The total running time of the script was: 40.57 seconds
+599 start
+The total running time of the script was: 44.85 seconds
+800 start
+The total running time of the script was: 74.25 seconds
+801 start
+The total running time of the script was: 42.84 seconds
+802 start
+The total running time of the script was: 55.28 seconds
+803 start
+The total running time of the script was: 43.36 seconds
+804 start
+The total running time of the script was: 47.81 seconds
+805 start
+The total running time of the script was: 42.02 seconds
+806 start
+The total running time of the script was: 51.10 seconds
+807 start
+The total running time of the script was: 46.60 seconds
+808 start
+The total running time of the script was: 43.17 seconds
+809 start
+The total running time of the script was: 49.48 seconds
+810 start
+The total running time of the script was: 49.58 seconds
+811 start
+The total running time of the script was: 35.65 seconds
+812 start
+The total running time of the script was: 56.79 seconds
+813 start
+The total running time of the script was: 40.84 seconds
+814 start
+The total running time of the script was: 36.75 seconds
+815 start
+The total running time of the script was: 52.81 seconds
+816 start
+The total running time of the script was: 44.96 seconds
+817 start
+The total running time of the script was: 56.14 seconds
+818 start
+The total running time of the script was: 50.93 seconds
+819 start
+The total running time of the script was: 41.18 seconds
+820 start
+The total running time of the script was: 56.84 seconds
+821 start
+The total running time of the script was: 48.76 seconds
+822 start
+The total running time of the script was: 41.92 seconds
+823 start
+The total running time of the script was: 38.13 seconds
+824 start
+The total running time of the script was: 67.46 seconds
+825 start
+The total running time of the script was: 41.96 seconds
+826 start
+The total running time of the script was: 53.46 seconds
+827 start
+The total running time of the script was: 49.09 seconds
+828 start
+The total running time of the script was: 50.11 seconds
+829 start
+The total running time of the script was: 35.72 seconds
+830 start
+The total running time of the script was: 63.57 seconds
+831 start
+The total running time of the script was: 71.40 seconds
+832 start
+The total running time of the script was: 52.13 seconds
+833 start
+The total running time of the script was: 41.91 seconds
+834 start
+The total running time of the script was: 38.38 seconds
+835 start
+The total running time of the script was: 37.83 seconds
+836 start
+The total running time of the script was: 46.35 seconds
+837 start
+The total running time of the script was: 45.45 seconds
+838 start
+The total running time of the script was: 41.91 seconds
+839 start
+The total running time of the script was: 44.97 seconds
+840 start
+The total running time of the script was: 42.60 seconds
+841 start
+The total running time of the script was: 38.70 seconds
+842 start
+The total running time of the script was: 44.47 seconds
+843 start
+The total running time of the script was: 49.45 seconds
+844 start
+The total running time of the script was: 63.08 seconds
+845 start
+The total running time of the script was: 47.53 seconds
+846 start
+The total running time of the script was: 50.40 seconds
+847 start
+The total running time of the script was: 53.79 seconds
+848 start
+The total running time of the script was: 37.98 seconds
+849 start
+The total running time of the script was: 46.87 seconds
+850 start
+The total running time of the script was: 51.56 seconds
+851 start
+The total running time of the script was: 49.32 seconds
+852 start
+The total running time of the script was: 44.45 seconds
+853 start
+The total running time of the script was: 42.97 seconds
+854 start
+The total running time of the script was: 37.17 seconds
+855 start
+The total running time of the script was: 42.45 seconds
+856 start
+The total running time of the script was: 53.59 seconds
+857 start
+The total running time of the script was: 38.93 seconds
+858 start
+The total running time of the script was: 33.80 seconds
+859 start
+The total running time of the script was: 43.76 seconds
+860 start
+The total running time of the script was: 49.90 seconds
+861 start
+The total running time of the script was: 40.21 seconds
+862 start
+The total running time of the script was: 37.98 seconds
+863 start
+The total running time of the script was: 54.30 seconds
+864 start
+The total running time of the script was: 56.88 seconds
+865 start
+The total running time of the script was: 62.29 seconds
+866 start
+The total running time of the script was: 50.86 seconds
+867 start
+The total running time of the script was: 36.94 seconds
+868 start
+The total running time of the script was: 84.98 seconds
+869 start
+The total running time of the script was: 34.76 seconds
+870 start
+The total running time of the script was: 38.98 seconds
+871 start
+The total running time of the script was: 46.18 seconds
+872 start
+The total running time of the script was: 36.00 seconds
+873 start
+The total running time of the script was: 45.27 seconds
+874 start
+The total running time of the script was: 38.43 seconds
+875 start
+The total running time of the script was: 44.09 seconds
+876 start
+The total running time of the script was: 49.77 seconds
+877 start
+The total running time of the script was: 48.44 seconds
+878 start
+The total running time of the script was: 90.56 seconds
+879 start
+The total running time of the script was: 58.39 seconds
+880 start
+The total running time of the script was: 41.45 seconds
+881 start
+The total running time of the script was: 40.20 seconds
+882 start
+The total running time of the script was: 41.53 seconds
+883 start
+The total running time of the script was: 38.15 seconds
+884 start
+The total running time of the script was: 57.13 seconds
+885 start
+The total running time of the script was: 56.44 seconds
+886 start
+The total running time of the script was: 58.79 seconds
+887 start
+The total running time of the script was: 52.47 seconds
+888 start
+The total running time of the script was: 38.76 seconds
+889 start
+The total running time of the script was: 45.22 seconds
+890 start
+The total running time of the script was: 44.58 seconds
+891 start
+The total running time of the script was: 45.77 seconds
+892 start
+The total running time of the script was: 46.33 seconds
+893 start
+The total running time of the script was: 49.02 seconds
+894 start
+The total running time of the script was: 44.10 seconds
+895 start
+The total running time of the script was: 51.69 seconds
+896 start
+The total running time of the script was: 42.09 seconds
+897 start
+The total running time of the script was: 51.95 seconds
+898 start
+The total running time of the script was: 53.62 seconds
+899 start
+The total running time of the script was: 42.52 seconds
+300 start
+The total running time of the script was: 65.73 seconds
+301 start
+The total running time of the script was: 55.30 seconds
+302 start
+The total running time of the script was: 53.77 seconds
+303 start
+The total running time of the script was: 51.14 seconds
+304 start
+The total running time of the script was: 50.03 seconds
+305 start
+The total running time of the script was: 58.20 seconds
+306 start
+The total running time of the script was: 52.70 seconds
+307 start
+The total running time of the script was: 41.08 seconds
+308 start
+The total running time of the script was: 38.41 seconds
+309 start
+The total running time of the script was: 52.24 seconds
+310 start
+The total running time of the script was: 51.79 seconds
+311 start
+The total running time of the script was: 49.43 seconds
+312 start
+The total running time of the script was: 49.42 seconds
+313 start
+The total running time of the script was: 47.87 seconds
+314 start
+The total running time of the script was: 41.16 seconds
+315 start
+The total running time of the script was: 33.21 seconds
+316 start
+The total running time of the script was: 54.90 seconds
+317 start
+The total running time of the script was: 43.47 seconds
+318 start
+The total running time of the script was: 54.60 seconds
+319 start
+The total running time of the script was: 53.09 seconds
+320 start
+The total running time of the script was: 47.18 seconds
+321 start
+The total running time of the script was: 56.25 seconds
+322 start
+The total running time of the script was: 50.70 seconds
+323 start
+The total running time of the script was: 48.34 seconds
+324 start
+The total running time of the script was: 41.35 seconds
+325 start
+The total running time of the script was: 46.02 seconds
+326 start
+The total running time of the script was: 48.87 seconds
+327 start
+The total running time of the script was: 52.90 seconds
+328 start
+The total running time of the script was: 38.36 seconds
+329 start
+The total running time of the script was: 42.35 seconds
+330 start
+The total running time of the script was: 65.54 seconds
+331 start
+The total running time of the script was: 51.43 seconds
+332 start
+The total running time of the script was: 48.10 seconds
+333 start
+The total running time of the script was: 50.95 seconds
+334 start
+The total running time of the script was: 36.11 seconds
+335 start
+The total running time of the script was: 36.41 seconds
+336 start
+The total running time of the script was: 48.26 seconds
+337 start
+The total running time of the script was: 65.33 seconds
+338 start
+The total running time of the script was: 43.11 seconds
+339 start
+The total running time of the script was: 42.91 seconds
+340 start
+The total running time of the script was: 62.14 seconds
+341 start
+The total running time of the script was: 42.62 seconds
+342 start
+The total running time of the script was: 50.11 seconds
+343 start
+The total running time of the script was: 42.84 seconds
+344 start
+The total running time of the script was: 60.20 seconds
+345 start
+The total running time of the script was: 37.24 seconds
+346 start
+The total running time of the script was: 59.72 seconds
+347 start
+The total running time of the script was: 41.78 seconds
+348 start
+The total running time of the script was: 37.86 seconds
+349 start
+The total running time of the script was: 38.38 seconds
+350 start
+The total running time of the script was: 43.14 seconds
+351 start
+The total running time of the script was: 52.48 seconds
+352 start
+The total running time of the script was: 62.16 seconds
+353 start
+The total running time of the script was: 35.13 seconds
+354 start
+The total running time of the script was: 55.33 seconds
+355 start
+The total running time of the script was: 35.17 seconds
+356 start
+The total running time of the script was: 61.54 seconds
+357 start
+The total running time of the script was: 44.18 seconds
+358 start
+The total running time of the script was: 38.21 seconds
+359 start
+The total running time of the script was: 41.21 seconds
+360 start
+The total running time of the script was: 42.64 seconds
+361 start
+The total running time of the script was: 35.80 seconds
+362 start
+The total running time of the script was: 42.14 seconds
+363 start
+The total running time of the script was: 50.13 seconds
+364 start
+The total running time of the script was: 36.31 seconds
+365 start
+The total running time of the script was: 66.69 seconds
+366 start
+The total running time of the script was: 44.74 seconds
+367 start
+The total running time of the script was: 30.18 seconds
+368 start
+The total running time of the script was: 50.88 seconds
+369 start
+The total running time of the script was: 41.37 seconds
+370 start
+The total running time of the script was: 67.84 seconds
+371 start
+The total running time of the script was: 50.30 seconds
+372 start
+The total running time of the script was: 48.81 seconds
+373 start
+The total running time of the script was: 51.38 seconds
+374 start
+The total running time of the script was: 48.06 seconds
+375 start
+The total running time of the script was: 51.77 seconds
+376 start
+The total running time of the script was: 46.16 seconds
+377 start
+The total running time of the script was: 51.94 seconds
+378 start
+The total running time of the script was: 55.61 seconds
+379 start
+The total running time of the script was: 37.54 seconds
+380 start
+The total running time of the script was: 48.30 seconds
+381 start
+The total running time of the script was: 46.62 seconds
+382 start
+The total running time of the script was: 46.55 seconds
+383 start
+The total running time of the script was: 60.16 seconds
+384 start
+The total running time of the script was: 48.42 seconds
+385 start
+The total running time of the script was: 41.83 seconds
+386 start
+The total running time of the script was: 48.34 seconds
+387 start
+The total running time of the script was: 68.17 seconds
+388 start
+The total running time of the script was: 38.73 seconds
+389 start
+The total running time of the script was: 55.91 seconds
+390 start
+The total running time of the script was: 45.16 seconds
+391 start
+The total running time of the script was: 41.37 seconds
+392 start
+The total running time of the script was: 27.82 seconds
+393 start
+The total running time of the script was: 39.69 seconds
+394 start
+The total running time of the script was: 50.92 seconds
+395 start
+The total running time of the script was: 46.01 seconds
+396 start
+The total running time of the script was: 65.48 seconds
+397 start
+The total running time of the script was: 61.76 seconds
+398 start
+The total running time of the script was: 45.17 seconds
+399 start
+The total running time of the script was: 45.30 seconds
+400 start
+The total running time of the script was: 74.54 seconds
+401 start
+The total running time of the script was: 38.36 seconds
+402 start
+The total running time of the script was: 43.68 seconds
+403 start
+The total running time of the script was: 40.88 seconds
+404 start
+The total running time of the script was: 41.57 seconds
+405 start
+The total running time of the script was: 54.76 seconds
+406 start
+The total running time of the script was: 61.33 seconds
+407 start
+The total running time of the script was: 47.45 seconds
+408 start
+The total running time of the script was: 31.58 seconds
+409 start
+The total running time of the script was: 45.98 seconds
+410 start
+The total running time of the script was: 58.77 seconds
+411 start
+The total running time of the script was: 37.42 seconds
+412 start
+The total running time of the script was: 53.75 seconds
+413 start
+The total running time of the script was: 36.05 seconds
+414 start
+The total running time of the script was: 51.88 seconds
+415 start
+The total running time of the script was: 42.34 seconds
+416 start
+The total running time of the script was: 48.29 seconds
+417 start
+The total running time of the script was: 68.15 seconds
+418 start
+The total running time of the script was: 60.59 seconds
+419 start
+The total running time of the script was: 36.13 seconds
+420 start
+The total running time of the script was: 40.92 seconds
+421 start
+The total running time of the script was: 39.62 seconds
+422 start
+The total running time of the script was: 55.57 seconds
+423 start
+The total running time of the script was: 45.26 seconds
+424 start
+The total running time of the script was: 40.83 seconds
+425 start
+The total running time of the script was: 35.06 seconds
+426 start
+The total running time of the script was: 49.79 seconds
+427 start
+The total running time of the script was: 45.91 seconds
+428 start
+The total running time of the script was: 41.28 seconds
+429 start
+The total running time of the script was: 46.82 seconds
+430 start
+The total running time of the script was: 48.10 seconds
+431 start
+The total running time of the script was: 37.35 seconds
+432 start
+The total running time of the script was: 40.56 seconds
+433 start
+The total running time of the script was: 48.22 seconds
+434 start
+The total running time of the script was: 50.65 seconds
+435 start
+The total running time of the script was: 39.63 seconds
+436 start
+The total running time of the script was: 37.59 seconds
+437 start
+The total running time of the script was: 47.53 seconds
+438 start
+The total running time of the script was: 48.00 seconds
+439 start
+The total running time of the script was: 71.02 seconds
+440 start
+The total running time of the script was: 37.21 seconds
+441 start
+The total running time of the script was: 36.76 seconds
+442 start
+The total running time of the script was: 38.35 seconds
+443 start
+The total running time of the script was: 60.50 seconds
+444 start
+The total running time of the script was: 43.10 seconds
+445 start
+The total running time of the script was: 57.61 seconds
+446 start
+The total running time of the script was: 44.64 seconds
+447 start
+The total running time of the script was: 38.26 seconds
+448 start
+The total running time of the script was: 57.03 seconds
+449 start
+The total running time of the script was: 62.72 seconds
+450 start
+The total running time of the script was: 53.06 seconds
+451 start
+The total running time of the script was: 50.84 seconds
+452 start
+The total running time of the script was: 58.06 seconds
+453 start
+The total running time of the script was: 30.51 seconds
+454 start
+The total running time of the script was: 39.68 seconds
+455 start
+The total running time of the script was: 48.50 seconds
+456 start
+The total running time of the script was: 41.47 seconds
+457 start
+The total running time of the script was: 49.63 seconds
+458 start
+The total running time of the script was: 41.77 seconds
+459 start
+The total running time of the script was: 46.19 seconds
+460 start
+The total running time of the script was: 45.72 seconds
+461 start
+The total running time of the script was: 50.36 seconds
+462 start
+The total running time of the script was: 37.49 seconds
+463 start
+The total running time of the script was: 46.45 seconds
+464 start
+The total running time of the script was: 58.57 seconds
+465 start
+The total running time of the script was: 40.98 seconds
+466 start
+The total running time of the script was: 55.91 seconds
+467 start
+The total running time of the script was: 55.61 seconds
+468 start
+The total running time of the script was: 43.24 seconds
+469 start
+The total running time of the script was: 56.46 seconds
+470 start
+The total running time of the script was: 56.49 seconds
+471 start
+The total running time of the script was: 54.42 seconds
+472 start
+The total running time of the script was: 59.68 seconds
+473 start
+The total running time of the script was: 39.57 seconds
+474 start
+The total running time of the script was: 44.61 seconds
+475 start
+The total running time of the script was: 46.53 seconds
+476 start
+The total running time of the script was: 48.33 seconds
+477 start
+The total running time of the script was: 40.91 seconds
+478 start
+The total running time of the script was: 44.24 seconds
+479 start
+The total running time of the script was: 43.70 seconds
+480 start
+The total running time of the script was: 81.05 seconds
+481 start
+The total running time of the script was: 43.56 seconds
+482 start
+The total running time of the script was: 38.57 seconds
+483 start
+The total running time of the script was: 69.73 seconds
+484 start
+The total running time of the script was: 48.45 seconds
+485 start
+The total running time of the script was: 34.70 seconds
+486 start
+The total running time of the script was: 41.87 seconds
+487 start
+The total running time of the script was: 50.97 seconds
+488 start
+The total running time of the script was: 47.54 seconds
+489 start
+The total running time of the script was: 55.62 seconds
+490 start
+The total running time of the script was: 54.00 seconds
+491 start
+The total running time of the script was: 58.91 seconds
+492 start
+The total running time of the script was: 47.49 seconds
+493 start
+The total running time of the script was: 73.15 seconds
+494 start
+The total running time of the script was: 41.23 seconds
+495 start
+The total running time of the script was: 45.82 seconds
+496 start
+The total running time of the script was: 53.64 seconds
+497 start
+The total running time of the script was: 67.53 seconds
+498 start
+The total running time of the script was: 52.16 seconds
+499 start
+The total running time of the script was: 48.66 seconds
+0 start
+The total running time of the script was: 62.53 seconds
+1 start
+The total running time of the script was: 44.85 seconds
+2 start
+The total running time of the script was: 39.49 seconds
+3 start
+The total running time of the script was: 41.59 seconds
+4 start
+The total running time of the script was: 47.74 seconds
+5 start
+The total running time of the script was: 37.93 seconds
+6 start
+The total running time of the script was: 42.36 seconds
+7 start
+The total running time of the script was: 53.99 seconds
+8 start
+The total running time of the script was: 43.69 seconds
+9 start
+The total running time of the script was: 51.49 seconds
+10 start
+The total running time of the script was: 44.47 seconds
+11 start
+The total running time of the script was: 56.17 seconds
+12 start
+The total running time of the script was: 44.63 seconds
+13 start
+The total running time of the script was: 46.27 seconds
+14 start
+The total running time of the script was: 42.92 seconds
+15 start
+The total running time of the script was: 45.16 seconds
+16 start
+The total running time of the script was: 55.17 seconds
+17 start
+The total running time of the script was: 57.57 seconds
+18 start
+The total running time of the script was: 63.38 seconds
+19 start
+The total running time of the script was: 56.17 seconds
+20 start
+The total running time of the script was: 38.55 seconds
+21 start
+The total running time of the script was: 46.91 seconds
+22 start
+The total running time of the script was: 38.89 seconds
+23 start
+The total running time of the script was: 37.30 seconds
+24 start
+The total running time of the script was: 38.14 seconds
+25 start
+The total running time of the script was: 60.38 seconds
+26 start
+The total running time of the script was: 43.53 seconds
+27 start
+The total running time of the script was: 46.59 seconds
+28 start
+The total running time of the script was: 49.80 seconds
+29 start
+The total running time of the script was: 36.47 seconds
+30 start
+The total running time of the script was: 65.69 seconds
+31 start
+The total running time of the script was: 33.89 seconds
+32 start
+The total running time of the script was: 41.99 seconds
+33 start
+The total running time of the script was: 58.03 seconds
+34 start
+The total running time of the script was: 46.42 seconds
+35 start
+The total running time of the script was: 86.87 seconds
+36 start
+The total running time of the script was: 48.26 seconds
+37 start
+The total running time of the script was: 56.63 seconds
+38 start
+The total running time of the script was: 45.75 seconds
+39 start
+The total running time of the script was: 46.29 seconds
+40 start
+The total running time of the script was: 35.95 seconds
+41 start
+The total running time of the script was: 73.90 seconds
+42 start
+The total running time of the script was: 46.50 seconds
+43 start
+The total running time of the script was: 42.89 seconds
+44 start
+The total running time of the script was: 35.44 seconds
+45 start
+The total running time of the script was: 82.28 seconds
+46 start
+The total running time of the script was: 46.15 seconds
+47 start
+The total running time of the script was: 59.43 seconds
+48 start
+The total running time of the script was: 56.32 seconds
+49 start
+The total running time of the script was: 54.84 seconds
+50 start
+The total running time of the script was: 48.66 seconds
+51 start
+The total running time of the script was: 40.95 seconds
+52 start
+The total running time of the script was: 36.83 seconds
+53 start
+The total running time of the script was: 61.98 seconds
+54 start
+The total running time of the script was: 49.86 seconds
+55 start
+The total running time of the script was: 36.35 seconds
+56 start
+The total running time of the script was: 44.81 seconds
+57 start
+The total running time of the script was: 49.01 seconds
+58 start
+The total running time of the script was: 46.43 seconds
+59 start
+The total running time of the script was: 55.52 seconds
+60 start
+The total running time of the script was: 43.35 seconds
+61 start
+The total running time of the script was: 42.50 seconds
+62 start
+The total running time of the script was: 38.29 seconds
+63 start
+The total running time of the script was: 48.09 seconds
+64 start
+The total running time of the script was: 52.69 seconds
+65 start
+The total running time of the script was: 57.17 seconds
+66 start
+The total running time of the script was: 55.15 seconds
+67 start
+The total running time of the script was: 60.34 seconds
+68 start
+The total running time of the script was: 55.97 seconds
+69 start
+The total running time of the script was: 54.89 seconds
+70 start
+The total running time of the script was: 48.23 seconds
+71 start
+The total running time of the script was: 40.22 seconds
+72 start
+The total running time of the script was: 43.90 seconds
+73 start
+The total running time of the script was: 52.15 seconds
+74 start
+The total running time of the script was: 49.54 seconds
+75 start
+The total running time of the script was: 46.74 seconds
+76 start
+The total running time of the script was: 45.08 seconds
+77 start
+The total running time of the script was: 37.49 seconds
+78 start
+The total running time of the script was: 36.75 seconds
+79 start
+The total running time of the script was: 67.08 seconds
+80 start
+The total running time of the script was: 39.93 seconds
+81 start
+The total running time of the script was: 48.42 seconds
+82 start
+The total running time of the script was: 56.10 seconds
+83 start
+The total running time of the script was: 37.60 seconds
+84 start
+The total running time of the script was: 45.79 seconds
+85 start
+The total running time of the script was: 47.75 seconds
+86 start
+The total running time of the script was: 48.99 seconds
+87 start
+The total running time of the script was: 38.16 seconds
+88 start
+The total running time of the script was: 49.43 seconds
+89 start
+The total running time of the script was: 54.36 seconds
+90 start
+The total running time of the script was: 49.32 seconds
+91 start
+The total running time of the script was: 69.58 seconds
+92 start
+The total running time of the script was: 43.75 seconds
+93 start
+The total running time of the script was: 51.65 seconds
+94 start
+The total running time of the script was: 79.69 seconds
+95 start
+The total running time of the script was: 48.75 seconds
+96 start
+The total running time of the script was: 43.96 seconds
+97 start
+The total running time of the script was: 44.28 seconds
+98 start
+The total running time of the script was: 38.15 seconds
+99 start
+The total running time of the script was: 46.15 seconds
+900 start
+The total running time of the script was: 60.89 seconds
+901 start
+The total running time of the script was: 53.21 seconds
+902 start
+The total running time of the script was: 39.95 seconds
+903 start
+The total running time of the script was: 72.42 seconds
+904 start
+The total running time of the script was: 36.80 seconds
+905 start
+The total running time of the script was: 50.02 seconds
+906 start
+The total running time of the script was: 51.49 seconds
+907 start
+The total running time of the script was: 50.12 seconds
+908 start
+The total running time of the script was: 46.71 seconds
+909 start
+The total running time of the script was: 49.51 seconds
+910 start
+The total running time of the script was: 53.70 seconds
+911 start
+The total running time of the script was: 52.87 seconds
+912 start
+The total running time of the script was: 50.58 seconds
+913 start
+The total running time of the script was: 71.80 seconds
+914 start
+The total running time of the script was: 48.73 seconds
+915 start
+The total running time of the script was: 44.46 seconds
+916 start
+The total running time of the script was: 45.74 seconds
+917 start
+The total running time of the script was: 35.49 seconds
+918 start
+The total running time of the script was: 45.86 seconds
+919 start
+The total running time of the script was: 39.35 seconds
+920 start
+The total running time of the script was: 43.42 seconds
+921 start
+The total running time of the script was: 57.17 seconds
+922 start
+The total running time of the script was: 44.92 seconds
+923 start
+The total running time of the script was: 45.70 seconds
+924 start
+The total running time of the script was: 55.12 seconds
+925 start
+The total running time of the script was: 48.96 seconds
+926 start
+The total running time of the script was: 54.80 seconds
+927 start
+The total running time of the script was: 53.00 seconds
+928 start
+The total running time of the script was: 56.07 seconds
+929 start
+The total running time of the script was: 45.52 seconds
+930 start
+The total running time of the script was: 63.23 seconds
+931 start
+The total running time of the script was: 39.54 seconds
+932 start
+The total running time of the script was: 54.80 seconds
+933 start
+The total running time of the script was: 55.75 seconds
+934 start
+The total running time of the script was: 58.53 seconds
+935 start
+The total running time of the script was: 41.01 seconds
+936 start
+The total running time of the script was: 78.85 seconds
+937 start
+The total running time of the script was: 37.27 seconds
+938 start
+The total running time of the script was: 45.60 seconds
+939 start
+The total running time of the script was: 52.95 seconds
+940 start
+The total running time of the script was: 45.73 seconds
+941 start
+The total running time of the script was: 43.71 seconds
+942 start
+The total running time of the script was: 35.40 seconds
+943 start
+The total running time of the script was: 54.47 seconds
+944 start
+The total running time of the script was: 59.26 seconds
+945 start
+The total running time of the script was: 38.42 seconds
+946 start
+The total running time of the script was: 54.74 seconds
+947 start
+The total running time of the script was: 39.44 seconds
+948 start
+The total running time of the script was: 48.64 seconds
+949 start
+The total running time of the script was: 37.48 seconds
+950 start
+The total running time of the script was: 60.68 seconds
+951 start
+The total running time of the script was: 40.00 seconds
+952 start
+The total running time of the script was: 46.76 seconds
+953 start
+The total running time of the script was: 46.52 seconds
+954 start
+The total running time of the script was: 43.36 seconds
+955 start
+The total running time of the script was: 67.59 seconds
+956 start
+The total running time of the script was: 39.63 seconds
+957 start
+The total running time of the script was: 30.99 seconds
+958 start
+The total running time of the script was: 35.03 seconds
+959 start
+The total running time of the script was: 32.77 seconds
+960 start
+The total running time of the script was: 46.73 seconds
+961 start
+The total running time of the script was: 57.69 seconds
+962 start
+The total running time of the script was: 49.16 seconds
+963 start
+The total running time of the script was: 46.04 seconds
+964 start
+The total running time of the script was: 46.37 seconds
+965 start
+The total running time of the script was: 42.27 seconds
+966 start
+The total running time of the script was: 58.79 seconds
+967 start
+The total running time of the script was: 65.41 seconds
+968 start
+The total running time of the script was: 53.15 seconds
+969 start
+The total running time of the script was: 52.20 seconds
+970 start
+The total running time of the script was: 46.89 seconds
+971 start
+The total running time of the script was: 56.28 seconds
+972 start
+The total running time of the script was: 42.56 seconds
+973 start
+The total running time of the script was: 54.28 seconds
+974 start
+The total running time of the script was: 48.63 seconds
+975 start
+The total running time of the script was: 45.86 seconds
+976 start
+The total running time of the script was: 49.24 seconds
+977 start
+The total running time of the script was: 55.28 seconds
+978 start
+The total running time of the script was: 45.57 seconds
+979 start
+The total running time of the script was: 50.36 seconds
+980 start
+The total running time of the script was: 45.78 seconds
+981 start
+The total running time of the script was: 82.54 seconds
+982 start
+The total running time of the script was: 53.51 seconds
+983 start
+The total running time of the script was: 48.65 seconds
+984 start
+The total running time of the script was: 52.96 seconds
+985 start
+The total running time of the script was: 50.88 seconds
+986 start
+The total running time of the script was: 55.63 seconds
+987 start
+The total running time of the script was: 31.91 seconds
+988 start
+The total running time of the script was: 47.94 seconds
+989 start
+The total running time of the script was: 50.21 seconds
+990 start
+The total running time of the script was: 53.41 seconds
+991 start
+The total running time of the script was: 74.46 seconds
+992 start
+The total running time of the script was: 58.88 seconds
+993 start
+The total running time of the script was: 49.68 seconds
+994 start
+The total running time of the script was: 53.41 seconds
+995 start
+The total running time of the script was: 41.63 seconds
+996 start
+The total running time of the script was: 62.38 seconds
+997 start
+The total running time of the script was: 53.74 seconds
+998 start
+The total running time of the script was: 54.24 seconds
+999 start
+The total running time of the script was: 44.35 seconds
+done

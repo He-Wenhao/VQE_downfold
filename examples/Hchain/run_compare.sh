@@ -26,7 +26,7 @@ for i in $(seq 0 $((NUM_NODES-1))); do
     NODE=${NODES[i]}
 
     # Run the task on the current node
-    srun --nodes=1 --nodelist=$NODE $PYTHON calc_opt_basis.py --atoms $ATOMS --start $START --end $END &
+    srun --nodes=1 --nodelist=$NODE $PYTHON compare_E.py --atoms $ATOMS --start $START --end $END &
 done
 
 # Wait for all background jobs to finish
