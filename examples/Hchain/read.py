@@ -56,6 +56,10 @@ def read_file(read_folder,output_path):
     # Compute the overlap matrix
     S = mol.intor("int1e_ovlp")
     S = perm_mat.T @ S @ perm_mat
+    
+    # compute fock matrix
+    h = mf.get_fock()
+    h = perm_mat.T @ h @ perm_mat
 
     
     # read res_E
@@ -79,7 +83,8 @@ def read_file(read_folder,output_path):
         "B3LYP_E": res_E_data["B3LYP_E"],
         "sto-3G_E": res_E_data["sto-3G_E"],
         'proj':proj.tolist(),
-        "S": S.tolist()
+        "S": S.tolist(),
+        "h": h.tolist()
     }
 
     # Save to JSON file
