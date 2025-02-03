@@ -1,5 +1,4 @@
 import json
-from pyscf import gto, scf, dft
 import argparse
 import numpy as np
 import os
@@ -7,6 +6,7 @@ import sys
 import scipy
 sys.path.append(os.path.join("../.."))
 from downfolding_methods_pytorch import nelec, norbs, fock_downfolding, Solve_fermionHam, perm_orca2pyscf
+from pyscf import gto, scf, dft
 
 def read_file(read_folder,output_path):
     # Define the input XYZ file
@@ -135,7 +135,7 @@ def main():
     # Loop through the specified range and call calc_opt_basis
     for i in range(args.start, args.end + 1):
         read_folder = f"H_chain_xyzs/{args.atoms}/{i}/"
-        output_file = f"H_chain_data/{args.atoms}_{i}.json"
+        output_file = f"H_chain_data/{args.atoms}/{args.atoms}_{i}.json"
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
         read_file(read_folder,output_file)
 

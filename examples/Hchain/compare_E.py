@@ -1,4 +1,5 @@
 import time
+tload0 = time.time()
 import json
 import sys
 import os
@@ -6,6 +7,9 @@ import argparse
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(script_dir, "../.."))
 from downfolding_methods_pytorch import nelec, norbs, fock_downfolding, Solve_fermionHam
+
+tload1 = time.time()
+print('loading time:',tload1-tload0)
 
 def grep_opt_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res_E.json'):
     start_time = time.time()
