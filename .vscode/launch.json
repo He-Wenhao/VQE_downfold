@@ -10,7 +10,9 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": false,
+            "cwd": "${fileDirname}",
+            "args": ["--atoms", "H4", "--start", "0", "--end", "1"]
         }
     ]
 }

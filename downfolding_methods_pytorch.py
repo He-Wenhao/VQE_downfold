@@ -105,7 +105,7 @@ def basis_downfolding_init(fock_method = 'HF',**kargs):
     overlap = ham.mol.intor('int1e_ovlp')
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
-    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
+    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2)).real
     h_orth = overlap_mh @ fock_AO @ overlap_mh
     h_orth = torch.tensor(h_orth,device=device)
     overlap_mh = torch.tensor(overlap_mh,device=device)
@@ -191,7 +191,7 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
     # minimize cost_func over a SO(n_bf) group
     
     # Initial guess (needs to be orthogonal)
-    Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
+    Q = basis_orth_init.clone().detach()[:,:nbasis].requires_grad_(True)
 
     # Initialize the Adam optimizer
     optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
@@ -219,7 +219,7 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
     else:
         f.write(f"max iteration achieved")
     f.close()
-    return Q
+    return torch.linalg.qr(Q,mode='reduced')[0]
 
 def S_optimized_basis(**kargs):
     import numpy as np
@@ -381,11 +381,13 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         sys.path.append('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold')
         from get_fock import get_NN_fock
         fock_AO = get_NN_fock(ham.mol)
+    elif fock_method[0] == 'self-defined':
+        fock_AO = fock_method[1]
     else:
         raise TypeError('fock_method ', fock_method, ' does not exist')
     overlap = ham.mol.intor('int1e_ovlp')
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
-    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2))
+    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2)).real
     h_orth = overlap_mh @ fock_AO @ overlap_mh
     overlap_mh = torch.tensor(overlap_mh,device=device)
     h_orth = torch.tensor(h_orth,device=device)
@@ -432,6 +434,53 @@ def nelec(**kargs):
     total_electrons = ham.mol.nelectron
     return total_electrons
 
+def perm_orca2pyscf(**kargs):# direct sum
+    mol = gto.M(**kargs)
+    mol.verbose = 0
+    def direct_sum(A, B):
+        if type(A) == str:
+            return B
+        if type(B) == str:
+            return A
+        # Create an output matrix with the appropriate shape filled with zeros
+        result = np.zeros((A.shape[0] + B.shape[0], A.shape[1] + B.shape[1]))
+        
+        # Place A in the top-left corner
+        result[:A.shape[0], :A.shape[1]] = A
+        
+        # Place B in the bottom-right corner
+        result[A.shape[0]:, A.shape[1]:] = B
+        
+        return result
+    # change basis order
+    perm_block = {
+        's':np.array([[1]]),
+        'p':np.array([
+                    [0,1,0],
+                    [0,0,1],
+                    [1,0,0]]),
+        'd':np.array([
+                    [0,0,0,0,1],
+                    [0,0,1,0,0],
+                    [1,0,0,0,0],
+                    [0,1,0,0,0],
+                    [0,0,0,1,0]]),
+        }
+    ind = 0
+    perm_mat = 'None'
+    while ind < len(mol.ao_labels()):
+        l_val = mol.ao_labels()[ind][5]
+        if l_val == 's':
+            ind += 1
+        elif l_val == 'p':
+            ind += 3
+        elif l_val == 'd':
+            ind += 5
+        else:
+            raise TypeError('wrong l value')
+        perm_mat = direct_sum(perm_mat,perm_block[l_val])
+    return perm_mat
+
 # do jordan wigner transformation
 def JW_trans(Ham_const,int_1bd,int_2bd):
     # add spinint_2bd
@@ -456,7 +505,7 @@ def Solve_qubitHam(new_jw_hamiltonian,method):
 def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
     #raise TypeError('not debugged yet')
     t0 = time.time()
-    mol = gto.M(verbose=2)
+    mol = gto.M(verbose=0)
     n = int_1bd.shape[0]
     mol.nelectron = nele
     t1 = time.time()

@@ -80,8 +80,8 @@ def sto3G_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res
     end_time = time.time()
     print(f"Successfully updated {res_file} with sto3G_E: {E}")
     print(f"Execution time: {end_time - start_time:.4f} seconds (downfold time: {d_time-start_time:.4f})")
-    
-        
+
+
 def main():
     # python3 compare_E.py --atoms H4 --start 0 --end 4
     # Parse command-line arguments

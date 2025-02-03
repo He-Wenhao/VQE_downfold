@@ -65,8 +65,8 @@ def write_chains_to_xyz_parallel(chains, chain_length, folder="H_chain_xyzs", nu
         pool.map(write_chain_to_xyz, chain_data)
 
 # Generate chains
-num_chains = 1000  # Number of chains
-chain_length = 8  # Number of H atoms per chain
+num_chains = 2  # Number of chains
+chain_length = 4  # Number of H atoms per chain
 chains = generate_perturbed_chains(num_chains, chain_length)
 
 # Write chains to .xyz files in parallel
