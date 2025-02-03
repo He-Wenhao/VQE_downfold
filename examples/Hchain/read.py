@@ -8,7 +8,7 @@ sys.path.append(os.path.join("../.."))
 from downfolding_methods_pytorch import nelec, norbs, fock_downfolding, Solve_fermionHam, perm_orca2pyscf
 from pyscf import gto, scf, dft
 
-def read_file(read_folder,output_path):
+def read_file(read_folder,output_folder,name):
     # Define the input XYZ file
     xyz_file_path = os.path.join(read_folder,'Hchain.xyz')
 
@@ -73,26 +73,40 @@ def read_file(read_folder,output_path):
     proj = proj.T @ proj
 
     # Create a JSON structure
-    molecular_data = {
+    basic_data = {
         "HF": HF_energy,
         "coordinates": coordinates,
         "elements": elements,
         "Enn": nuclear_energy,
-        "opt_E": res_E_data["opt_E"],
-        "HF_E": res_E_data["HF_E"],
-        "B3LYP_E": res_E_data["B3LYP_E"],
-        "sto-3G_E": res_E_data["sto-3G_E"],
-        'proj':proj.tolist(),
         "S": S.tolist(),
         "h": h.tolist()
     }
 
     # Save to JSON file
+    basic_path = os.path.join(output_folder,'basic',name)
+    obs_path = os.path.join(output_folder,'obs',name)
     
-    with open(output_path, "w") as json_file:
-        json.dump(molecular_data, json_file, indent=4, separators=(',', ': '))
+    os.makedirs(os.path.dirname(basic_path), exist_ok=True)
+    os.makedirs(os.path.dirname(obs_path), exist_ok=True)
+    
+    with open(basic_path, "w") as json_file:
+        json.dump(basic_data, json_file, indent=4, separators=(',', ': '))
 
-    print(f"JSON file saved as {output_path}")
+    # Create a JSON structure
+    obs_data = {
+        "opt_E": res_E_data["opt_E"],
+        "HF_E": res_E_data["HF_E"],
+        "B3LYP_E": res_E_data["B3LYP_E"],
+        "sto-3G_E": res_E_data["sto-3G_E"],
+        'proj':proj.tolist()
+    }
+
+    # Save to JSON file
+    
+    with open(obs_path, "w") as json_file:
+        json.dump(obs_data, json_file, indent=4, separators=(',', ': '))
+
+    print(f"JSON file saved as {output_folder}")
     
 def calc_basisNN_inp_file(inp_data):
     elements = inp_data['elements']
@@ -140,9 +154,8 @@ def main():
     # Loop through the specified range and call calc_opt_basis
     for i in range(args.start, args.end + 1):
         read_folder = f"H_chain_xyzs/{args.atoms}/{i}/"
-        output_file = f"H_chain_data/{args.atoms}/{args.atoms}_{i}.json"
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
-        read_file(read_folder,output_file)
+        output_folder = f"H_chain_data/{args.atoms}"
+        read_file(read_folder,output_folder,name=f"{i}.json")
 
 
 if __name__ == '__main__':
