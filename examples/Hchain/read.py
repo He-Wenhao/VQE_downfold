@@ -1,3 +1,5 @@
+import time
+load_time0 = time.time()
 import json
 import argparse
 import numpy as np
@@ -7,8 +9,11 @@ import scipy
 sys.path.append(os.path.join("../.."))
 from downfolding_methods_pytorch import nelec, norbs, fock_downfolding, Solve_fermionHam, perm_orca2pyscf
 from pyscf import gto, scf, dft
+load_time1 = time.time()
+print('load time =',load_time1-load_time0)
 
 def read_file(read_folder,output_folder,name):
+    time0 = time.time()
     # Define the input XYZ file
     xyz_file_path = os.path.join(read_folder,'Hchain.xyz')
 
@@ -106,7 +111,8 @@ def read_file(read_folder,output_folder,name):
     with open(obs_path, "w") as json_file:
         json.dump(obs_data, json_file, indent=4, separators=(',', ': '))
 
-    print(f"JSON file saved as {output_folder}")
+    time1 = time.time()
+    print(f"JSON file saved as {output_folder} with time {time1-time0:.4f} seconds")
     
 def calc_basisNN_inp_file(inp_data):
     elements = inp_data['elements']
