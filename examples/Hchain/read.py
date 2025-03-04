@@ -139,9 +139,9 @@ def calc_basisNN_inp_file(inp_data):
 
 
 def dbg_test():
-    read_file('H_chain_xyzs/H4/0/','H_chain_xyzs/H4/0/summary.json')
+    #read_file('H_chain_xyzs/H4/0/','H_chain_xyzs/H4/0/summary.json')
     # read res_E
-    read_path = 'H_chain_xyzs/H4/0/summary.json'
+    read_path = 'H_chain_xyzs/H4_test/0/summary.json'
     with open(read_path, "r") as file:
         inp_data = json.load(file)  # Converts JSON to a Python dictionary
     calc_basisNN_inp_file(inp_data)

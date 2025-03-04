@@ -22,11 +22,11 @@ def generate_perturbed_chains(num_chains=10, chain_length=5, bond_length=0.74, m
         prev_x = 0  # Initialize the starting point for the chain
         for i in range(chain_length):
             # Start from the last x position and add the bond length with perturbation
-            x = prev_x + bond_length + np.random.uniform(-x_perturb, x_perturb)
+            x = prev_x  + np.random.uniform(-x_perturb, x_perturb)
             y = np.random.uniform(-max_perturb, max_perturb)  # Perturb y-coordinate
             z = np.random.uniform(-max_perturb, max_perturb)  # Perturb z-coordinate
             chain.append([x, y, z])
-            prev_x = x  # Update the previous x-coordinate
+            prev_x = x + bond_length # Update the previous x-coordinate
         chains.append(np.array(chain))
     return chains
 
@@ -64,11 +64,40 @@ def write_chains_to_xyz_parallel(chains, chain_length, folder="H_chain_xyzs", nu
     with Pool(num_processes) as pool:
         pool.map(write_chain_to_xyz, chain_data)
 
-# Generate chains
-num_chains = 2  # Number of chains
-chain_length = 4  # Number of H atoms per chain
-chains = generate_perturbed_chains(num_chains, chain_length)
+def gen_perturbed_chains():
+    # Generate chains
+    num_chains = 2  # Number of chains
+    chain_length = 4  # Number of H atoms per chain
+    chains = generate_perturbed_chains(num_chains, chain_length)
 
-# Write chains to .xyz files in parallel
-write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)
+    # Write chains to .xyz files in parallel
+    write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)
 
+def gen_dissociation_chains():
+    # Generate chains
+    num_chains = 25  # Number of chains
+    chain_length = 4  # Number of H atoms per chain
+    bond_length_interval = 0.1
+    chains = []
+    for point in range(3, num_chains + 1):
+        bond_length = bond_length_interval * point
+        chains .extend( generate_perturbed_chains(num_chains=1, chain_length=chain_length,bond_length=bond_length, max_perturb=0., x_perturb=0.) )
+
+    # Write chains to .xyz files in parallel
+    write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)
+
+def gen_all_bondlength_chains():
+    # Generate chains
+    num_chains = 25  # Number of chains
+    chain_length = 4  # Number of H atoms per chain
+    bond_length_interval = 0.1
+    chains = []
+    for point in range(3, num_chains + 1):
+        bond_length = bond_length_interval * point
+        chains .extend( generate_perturbed_chains(num_chains=2, chain_length=chain_length,bond_length=bond_length, max_perturb=0.2, x_perturb=0.1) )
+
+    # Write chains to .xyz files in parallel
+    write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)    
+    
+if __name__ == '__main__':
+    gen_all_bondlength_chains()
