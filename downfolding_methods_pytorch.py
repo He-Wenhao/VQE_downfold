@@ -163,7 +163,7 @@ def E_optimized_basis(nbasis=2,**kargs):
     #print("Optimal matrix Q:", Q_opt)
     return result.fun
 
-def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**kargs):
+def E_optimized_basis_gradient_pytorch(nbasis=2,method='FCI',log_file='opt_log.txt',**kargs):
     import numpy as np
     from scipy.optimize import minimize
     from scipy.linalg import qr
@@ -220,6 +220,50 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
         f.write(f"max iteration achieved")
     f.close()
     return torch.linalg.qr(Q,mode='reduced')[0]
+
+def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**kargs):
+    assert method == 'FCI'
+    from pyscf import gto, scf, mcscf
+    import numpy as np
+    
+    from scipy.linalg import fractional_matrix_power
+
+    # Define the H2 molecule
+    mol = gto.M(**kargs)
+
+    # Perform Hartree-Fock Calculation
+    mf = scf.RHF(mol)
+    mf.kernel()
+    nele = nelec(**kargs)
+    # Perform CASSCF(2,2) Calculation
+    cas = mcscf.CASSCF(mf, nele, nbasis)
+    cas.kernel()
+
+    # Get the optimized MO coefficients
+    mo_coeff = cas.mo_coeff[:,:nbasis ]  # Optimized Molecular Orbital Coefficients
+    # Optionally, print in a more readable format
+    for i, coeff in enumerate(mo_coeff.T):  # Transpose to iterate over orbitals
+        print(f"\nOptimized MO {i + 1}:")
+        print(coeff)
+
+    f = open(log_file, 'w')
+    f.write(f'energy:{cas.e_tot}')
+    f.close()
+    
+    # do normalization
+    # Compute the overlap matrix S
+    S = mol.intor("int1e_ovlp")  # Overlap matrix
+
+    # Compute S^(-1/2) using Löwdin orthogonalization
+    S_inv_sqrt = fractional_matrix_power(S, 0.5)
+
+    # Apply Löwdin transformation to the CASSCF orbitals
+    mo_lowdin = S_inv_sqrt @ mo_coeff
+    
+    ortho_check = mo_lowdin.T @  mo_lowdin
+    print("Orthonormality Check (should be identity):\n", ortho_check)
+
+    return mo_lowdin.T
 
 def S_optimized_basis(**kargs):
     import numpy as np
