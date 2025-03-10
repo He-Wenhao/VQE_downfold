@@ -112,7 +112,7 @@ def read_file(read_folder,output_folder,name):
         json.dump(obs_data, json_file, indent=4, separators=(',', ': '))
 
     time1 = time.time()
-    print(f"JSON file saved as {output_folder} with time {time1-time0:.4f} seconds")
+    print(f"JSON file saved as {obs_path} with time {time1-time0:.4f} seconds")
     
 def calc_basisNN_inp_file(inp_data):
     elements = inp_data['elements']
