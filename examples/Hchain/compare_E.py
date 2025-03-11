@@ -18,8 +18,8 @@ def grep_opt_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='
         lines = f.readlines()
     
     for line in reversed(lines):
-        if "Loss:" in line:
-            loss_value = line.split("Loss:")[-1].split()[0].strip()
+        if "energy:" in line:
+            loss_value = line.split("energy:")[-1].split()[0].strip()
             loss_value = float(loss_value)
             break
     else:
