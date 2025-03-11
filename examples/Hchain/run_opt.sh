@@ -17,7 +17,7 @@ NUM_NODES=${#NODES[@]}
 
 # Task parameters
 TASKS_PER_NODE=92
-ATOMS="H4"
+ATOMS="H6"
 
 # Loop through the nodes and assign tasks
 for i in $(seq 0 $((NUM_NODES-1))); do
