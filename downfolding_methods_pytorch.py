@@ -242,9 +242,7 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
     # Get the optimized MO coefficients
     mo_coeff = cas.mo_coeff[:,:nbasis ]  # Optimized Molecular Orbital Coefficients
     # Optionally, print in a more readable format
-    for i, coeff in enumerate(mo_coeff.T):  # Transpose to iterate over orbitals
-        print(f"\nOptimized MO {i + 1}:")
-        print(coeff)
+
 
     f = open(log_file, 'w')
     f.write(f'energy:{cas.e_tot}')
