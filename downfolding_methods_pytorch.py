@@ -260,8 +260,8 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
     # Apply Löwdin transformation to the CASSCF orbitals
     mo_lowdin = S_inv_sqrt @ mo_coeff
     
-    ortho_check = mo_lowdin.T @  mo_lowdin
-    print("Orthonormality Check (should be identity):\n", ortho_check)
+    # ortho_check = mo_lowdin.T @  mo_lowdin
+    # print("Orthonormality Check (should be identity):\n", ortho_check)
 
     return mo_lowdin.T
 
