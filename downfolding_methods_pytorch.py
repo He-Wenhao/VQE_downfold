@@ -464,12 +464,8 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         raise TypeError('fock_method ', fock_method, ' does not exist')
     overlap = ham.mol.intor('int1e_ovlp')
     # solve generalized eigenvalue problem, the generalized eigen vector is new basis
-    overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2)).real
-    h_orth = overlap_mh @ fock_AO @ overlap_mh
-    overlap_mh = torch.tensor(overlap_mh,device=device)
-    h_orth = torch.tensor(h_orth,device=device)
-    _energy, basis_orth = eig_torch(h_orth)
-    basis = overlap_mh @ basis_orth
+    _energy, basis = eig(fock_AO,overlap)
+    basis = torch.tensor(basis,device=device)
     #print('my basis:\n',basis)
     #print('basic basis:\n',myhf.mo_coeff)
     # if quasi orbital is used
