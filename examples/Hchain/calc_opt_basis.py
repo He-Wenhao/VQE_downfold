@@ -6,6 +6,7 @@ import argparse
 script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(script_dir, "../.."))
 from downfolding_methods_pytorch import E_optimized_basis_gradient, norbs
+import numpy as np
 
 def calc_opt_basis(xyzfile='Hchain.xyz',output_file = "opt_basis.json",log_file='opt_log.txt'):
     if os.path.exists(log_file):
@@ -13,6 +14,10 @@ def calc_opt_basis(xyzfile='Hchain.xyz',output_file = "opt_basis.json",log_file=
         return None  # This should be inside a loop
     start_time = time.time() 
     Q = E_optimized_basis_gradient(nbasis=norbs(atom=xyzfile,basis='sto-3G'),method='FCI',log_file=log_file,atom=xyzfile,basis='ccpVDZ')
+    if np.iscomplexobj(Q):
+        imag_norm = np.linalg.norm(Q.imag)  # Compute the norm of the imaginary part
+        print("Norm of the imaginary part:", imag_norm)
+        Q = Q.real  # Keep only the real part
     Q_list = Q.transpose(0,1).tolist()
 
     # Write the list into a JSON file
