@@ -23,6 +23,7 @@ from torch import tensor
 import time
 
 import json
+from functools import reduce
 
 torch.set_printoptions(precision=10)
 device = 'cpu'
@@ -232,7 +233,18 @@ def E_optimized_basis_gradient(nbasis=2,method='FCI',log_file='opt_log.txt',**ka
     mol = gto.M(**kargs)
 
     # Perform Hartree-Fock Calculation
+    # Function to diagonalize the Fock matrix
+    def eig(h, s):
+        d, t = np.linalg.eigh(s)
+        x = t[:, d > 1e-8] / np.sqrt(d[d > 1e-8])
+        xhx = reduce(np.dot, (x.T, h, x))
+        e, c = np.linalg.eigh(xhx)
+        c = np.dot(x, c)
+        return e, c
+
+    # Perform RHF calculation as a starting point
     mf = scf.RHF(mol)
+    mf.eig = eig
     mf.kernel()
     nele = nelec(**kargs)
     # Perform CASSCF(2,2) Calculation
@@ -408,16 +420,32 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
     ham.pyscf_init(**kargs)
     # run HF, get Fock and overlap matrix
     ham.mol.verbose = 0
+    # Function to diagonalize the Fock matrix
+    def eig(h, s):
+        d, t = np.linalg.eigh(s)
+        x = t[:, d > 1e-8] / np.sqrt(d[d > 1e-8])
+        xhx = reduce(np.dot, (x.T, h, x))
+        e, c = np.linalg.eigh(xhx)
+        c = np.dot(x, c)
+        return e, c
+
+    # Perform RHF calculation as a starting point
     if fock_method == 'HF':
-        myhf = ham.mol.RHF().run()
+        myhf = scf.RHF(ham.mol)
+        myhf.eig = eig
+        myhf.kernel()
         fock_AO = myhf.get_fock()
     elif fock_method == 'B3LYP':
-        myhf = ham.mol.RKS().run()
+        myhf = scf.RKS(ham.mol)
         myhf.xc = 'B3LYP'
+        myhf.eig = eig
+        myhf.kernel()
         fock_AO = myhf.get_fock()
     elif fock_method == 'lda,vwn':
-        myhf = ham.mol.RKS().run()
+        myhf = scf.RKS(ham.mol)
         myhf.xc = 'lda,vwn'
+        myhf.eig = eig
+        myhf.kernel()
         fock_AO = myhf.get_fock()
     elif fock_method == 'EGNN':
         sys.path.append('/home/hewenhao/Documents/wenhaohe/research/VQE_downfold')
