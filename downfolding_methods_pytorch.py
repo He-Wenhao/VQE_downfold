@@ -428,6 +428,13 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
         e, c = np.linalg.eigh(xhx)
         c = np.dot(x, c)
         return e, c
+    def eig_torch(h, s):
+        d, t = torch.linalg.eigh(s)
+        x = t[:, d > 1e-8] / torch.sqrt(d[d > 1e-8])
+        xhx = reduce(torch.dot, (x.T, h, x))
+        e, c = torch.linalg.eigh(xhx)
+        c = torch.dot(x, c)
+        return e, c
 
     # Perform RHF calculation as a starting point
     if fock_method == 'HF':
@@ -461,7 +468,7 @@ def fock_downfolding(n_folded,fock_method,QO,**kargs):
     h_orth = overlap_mh @ fock_AO @ overlap_mh
     overlap_mh = torch.tensor(overlap_mh,device=device)
     h_orth = torch.tensor(h_orth,device=device)
-    _energy, basis_orth = torch.linalg.eigh(h_orth)
+    _energy, basis_orth = eig_torch(h_orth)
     basis = overlap_mh @ basis_orth
     #print('my basis:\n',basis)
     #print('basic basis:\n',myhf.mo_coeff)
