@@ -579,8 +579,16 @@ def Solve_fermionHam(Ham_const,int_1bd,int_2bd,nele,method):
     n = int_1bd.shape[0]
     mol.nelectron = nele
     t1 = time.time()
-
+    # Function to diagonalize the Fock matrix
+    def eig(h, s):
+        d, t = np.linalg.eigh(s)
+        x = t[:, d > 1e-8] / np.sqrt(d[d > 1e-8])
+        xhx = reduce(np.dot, (x.T, h, x))
+        e, c = np.linalg.eigh(xhx)
+        c = np.dot(x, c)
+        return e, c
     mf = scf.RHF(mol)
+    mf.eig = eig
     mf.get_hcore = lambda *args: int_1bd.detach().numpy()
     mf.get_ovlp = lambda *args: np.eye(n)
     mf._eri = ao2mo.restore(8, int_2bd.detach().numpy(), n)
