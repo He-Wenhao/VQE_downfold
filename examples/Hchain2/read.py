@@ -68,8 +68,8 @@ def read_file(read_folder,output_folder,name):
 
     
     # read res_E
-    #with open(os.path.join(read_folder,"res_E.json"), "r") as file:
-    #    res_E_data = json.load(file)  # Converts JSON to a Python dictionary
+    with open(os.path.join(read_folder,"res_E.json"), "r") as file:
+        res_E_data = json.load(file)  # Converts JSON to a Python dictionary
         
     # read basis and calculate projection operator
     with open(os.path.join(read_folder,"opt_basis.json"), "r") as file:
@@ -103,6 +103,8 @@ def read_file(read_folder,output_folder,name):
         #"HF_E": res_E_data["HF_E"],
         #"B3LYP_E": res_E_data["B3LYP_E"],
         #"sto-3G_E": res_E_data["sto-3G_E"],
+        "opt_l1": res_E_data["opt_l1"],
+        "init_l1": res_E_data["init_l1"],
         'proj':proj.tolist()
     }
 
