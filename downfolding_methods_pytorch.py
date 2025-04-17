@@ -91,23 +91,28 @@ def basis_downfolding_init(fock_method = 'HF',**kargs):
     ham.pyscf_init(**kargs)
     # run HF, get Fock and overlap matrix
     ham.mol.verbose = 0
-
-    if fock_method == 'HF':
-        myhf = ham.mol.RHF().run()
-        fock_AO = myhf.get_fock()
-    elif fock_method == 'B3LYP':
-        myhf = ham.mol.RKS().run()
-        myhf.xc = 'B3LYP'
-        fock_AO = myhf.get_fock()
-    elif fock_method == 'lda,vwn':
-        myhf = ham.mol.RKS().run()
-        myhf.xc = 'lda,vwn'
-        fock_AO = myhf.get_fock()
     overlap = ham.mol.intor('int1e_ovlp')
     ham.calc_Ham_AO()   # calculate fermionic hamiltonian on AO basis
-    # solve generalized eigenvalue problem, the generalized eigen vector is new basis
     overlap_mh = scipy.linalg.fractional_matrix_power(overlap, (-1/2)).real
-    h_orth = overlap_mh @ fock_AO @ overlap_mh
+    
+    if fock_method == 'AO':
+        h_orth = np.eye(overlap.shape[0])
+    else:
+        if fock_method == 'HF':
+            myhf = ham.mol.RHF().run()
+            fock_AO = myhf.get_fock()
+        elif fock_method == 'B3LYP':
+            myhf = ham.mol.RKS().run()
+            myhf.xc = 'B3LYP'
+            fock_AO = myhf.get_fock()
+        elif fock_method == 'lda,vwn':
+            myhf = ham.mol.RKS().run()
+            myhf.xc = 'lda,vwn'
+            fock_AO = myhf.get_fock()
+        # solve generalized eigenvalue problem, the generalized eigen vector is new basis
+
+        h_orth = overlap_mh @ fock_AO @ overlap_mh
+    
     h_orth = torch.tensor(h_orth,device=device)
     overlap_mh = torch.tensor(overlap_mh,device=device)
     _energy, basis_orth = torch.linalg.eigh(h_orth)
@@ -687,7 +692,7 @@ def dbg_test():
     print('ED qubit result: ',E2)
 
 
-if __name__=='__main__':
+def test0():
     start_time = time.time() 
     #dbg_test()
     #S_optimized_basis_constraint_multi_rounds(fock_method='B3LYP',atom='H2.xyz',basis='ccpVDZ')
@@ -695,6 +700,207 @@ if __name__=='__main__':
     #E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
     #S_optimized_basis(atom='H2.xyz',basis='ccpVDZ')
     Q = E_optimized_basis_gradient(nbasis=4,method='FCI',atom='H2.xyz',basis='ccpVDZ')
+    Q_list = Q.transpose(0,1).tolist()
+
+    # Write the list into a JSON file
+    output_file = "opt_basis.json"
+    with open(output_file, "w") as f:
+        json.dump(Q_list, f)
+    end_time = time.time()  # Capture the end time
+    total_time = end_time - start_time  # Calculate the total runtime
+
+    print(f"The total running time of the script was: {total_time:.2f} seconds")
+
+def LambdaQ_bk(Ham_const,int_1bd,int_2bd):
+    """
+    Calculate the LambdaQ value for a given Hamiltonian.
+    
+    Parameters:
+    Ham_const : torch.Tensor
+        The constant part of the Hamiltonian.
+    int_1bd : torch.Tensor
+        h_{pq}
+        The one-body interaction terms of the Hamiltonian.
+    int_2bd : torch.Tensor
+        g_{pqrs}
+        The two-body interaction terms of the Hamiltonian.
+        
+    Returns: float
+        \lambda_T+\lambda_V
+        where
+            \lambda_T=\sum_{p q}^N\left|h_{p q}+\frac{1}{2} \sum_r^N\left(2 g_{p q r r}-g_{p r r q}\right)\right|
+            \lambda_V=\frac{1}{2} \sum_{p q r s}^N\left|g_{p q r s}\right|
+    """
+    h = int_1bd
+    g = int_2bd
+    N = h.shape[0]
+
+    # Compute sum_r (2 * g_{p q r r} - g_{p r r q})
+    g_pqrr = torch.sum(torch.diagonal(g, dim1=2, dim2=3), dim=-1)  # shape: (N, N)
+    g_prrq = torch.sum(torch.diagonal(g.permute(0, 2, 3, 1), dim1=1, dim2=2), dim=-1)  # shape: (N, N)
+
+    T_term = h + 0.5 * (2 * g_pqrr - g_prrq)
+    lambda_T = torch.sum(torch.abs(T_term))
+
+    lambda_V = 0.5 * torch.sum(torch.abs(g))
+
+    return (lambda_T + lambda_V).item()
+
+
+def LambdaQ(Ham_const,int_1bd,int_2bd):
+    """
+    Calculate the LambdaQ value for a given Hamiltonian.
+    
+    Parameters:
+    Ham_const : torch.Tensor
+        The constant part of the Hamiltonian.
+    int_1bd : torch.Tensor
+        h_{pq}
+        The one-body interaction terms of the Hamiltonian.
+    int_2bd : torch.Tensor
+        g_{pqrs}
+        The two-body interaction terms of the Hamiltonian.
+        
+    Returns: float
+        \lambda_C+\lambda_T+\lambda_V^{\prime}
+        where
+            \lambda_C=\left|\sum_p^N h_{p p}+\frac{1}{2} \sum_{p r}^N g_{p p r r}-\frac{1}{4} \sum_{p r}^N g_{p r r p}\right|,
+            \lambda_T=\sum_{p q}^N\left|h_{p q}+\sum_r^N g_{p q r r}-\frac{1}{2} \sum_r^N g_{p r r q}\right|,
+            \lambda_V^{\prime}=\frac{1}{2} \sum_{p>r, s>q}^N\left|g_{p q r s}-g_{p s r q}\right|+\frac{1}{4} \sum_{p q r s}^N\left|g_{p q r s}\right| .
+    """
+    h = int_1bd
+    # h += torch.eye(h.shape[0], device=device) * Ham_const  # Add constant term to h
+    g = int_2bd
+    N = h.shape[0]
+
+    # λ_C = | sum_p h_pp + 1/2 sum_{p,r} g_pprr - 1/4 sum_{p,r} g_prrp |
+    diag_h = torch.sum(torch.diagonal(h))
+    g_pprr = torch.sum(g.diagonal(offset=0, dim1=0, dim2=1).diagonal(offset=0, dim1=1, dim2=2))
+    g_prrp = torch.sum(g.permute(0, 2, 3, 1).diagonal(offset=0, dim1=0, dim2=2).diagonal(offset=0, dim1=1, dim2=2))
+    lambda_C = torch.abs(diag_h + 0.5 * g_pprr - 0.25 * g_prrp)
+
+    # λ_T = sum_{p,q} | h_pq + sum_r g_pqrr - 1/2 sum_r g_prrq |
+    sum_r_g_pqrr = torch.sum(g, dim=3)  # g_pqr*
+    sum_r_g_prrq = torch.sum(g.permute(0, 2, 3, 1), dim=2)  # g_pr*rq
+    T_term = h + sum_r_g_pqrr - 0.5 * sum_r_g_prrq
+    lambda_T = torch.sum(torch.abs(T_term))
+
+    # λ_V' = 1/2 sum_{p>r, s>q} |g_pqrs - g_psrq| + 1/4 sum_{pqrs} |g_pqrs|
+    N = g.shape[0]
+
+    # Create all index grids
+    p, q, r, s = torch.meshgrid(
+        torch.arange(N), torch.arange(N), torch.arange(N), torch.arange(N), indexing='ij'
+    )
+
+    # Create masks: p > r and q < s
+    mask = (p > r) & (q < s)
+
+    # Compute the difference and apply mask
+    diff = g[p, q, r, s] - g[p, s, r, q]
+    lambda_V_prime_1 = torch.sum(torch.abs(diff[mask]))
+    lambda_V_prime_1 *= 0.5
+
+    lambda_V_prime_2 = 0.25 * torch.sum(torch.abs(g))
+
+    lambda_V_prime = lambda_V_prime_1 + lambda_V_prime_2
+
+    return (lambda_C + lambda_T + lambda_V_prime)
+    
+def LER(Ham_const,int_1bd,int_2bd):
+    """
+    Calculate the LambdaQ value for a given Hamiltonian.
+    
+    Parameters:
+    Ham_const : torch.Tensor
+        The constant part of the Hamiltonian.
+    int_1bd : torch.Tensor
+        h_{pq}
+        The one-body interaction terms of the Hamiltonian.
+    int_2bd : torch.Tensor
+        g_{pqrs}
+        The two-body interaction terms of the Hamiltonian.
+        
+    Returns: float
+        sum_i g_{iiii}
+    """
+    diag_indices = torch.arange(int_2bd.shape[0])
+    return torch.sum(int_2bd[diag_indices, diag_indices, diag_indices, diag_indices])
+
+def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_basis = 'HF',**kargs):
+    import numpy as np
+    from scipy.optimize import minimize
+    from scipy.linalg import qr
+
+    # dimension before folding
+    n_bf = norbs(**kargs)
+    nele = nelec(**kargs)
+    assert nele %2 == 0
+    # initialize initial guess
+    ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=init_basis,**kargs)
+    def ler(basis_orth,method):
+        t0 = time.time() 
+        t1 = time.time()  # Capture the end time
+        t2 = time.time()  # Capture the end time
+        basis_orth, _R = torch.linalg.qr(basis_orth,mode='reduced')    # orthorgonalize basis_orth
+        t3 = time.time()  # Capture the end time
+        ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
+        t4 = time.time()  # Capture the end time
+        res = LER(ham.Ham_const,ham.int_1bd,ham.int_2bd)
+        #E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([nele//2,nele//2]),method=method)
+        t5 = time.time()  # Capture the end time
+        return res
+    
+    def l_1(basis_orth,method):
+        t0 = time.time() 
+        t1 = time.time()  # Capture the end time
+        t2 = time.time()  # Capture the end time
+        basis_orth, _R = torch.linalg.qr(basis_orth,mode='reduced')    # orthorgonalize basis_orth
+        t3 = time.time()  # Capture the end time
+        ham = basis_downfolding(ham0,overlap_mh, basis_orth, n_folded=nbasis)
+        t4 = time.time()  # Capture the end time
+        res = LambdaQ(ham.Ham_const,ham.int_1bd,ham.int_2bd)
+        #E, properties = Solve_fermionHam(ham.Ham_const,ham.int_1bd,ham.int_2bd,nele=sum([nele//2,nele//2]),method=method)
+        t5 = time.time()  # Capture the end time
+        return res
+    
+    # Initial guess (needs to be orthogonal)
+    Q = basis_orth_init.clone().detach()[:,:nbasis].requires_grad_(True)
+
+    # Initialize the Adam optimizer
+    optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
+    prev_loss = None
+    # Optimization loop
+    f = open(log_file, 'w')
+    for step in range(1000):
+        optimizer.zero_grad()  # Reset the gradients to zero
+
+        loss = l_1(Q,method)  # Compute the current loss
+        l_1_val = l_1(Q,method).item()
+
+        loss.backward()        # Perform backpropagation to compute the gradients
+        optimizer.step()       # Update parameters using the computed gradients
+        if step % 10 == 0:
+            f.write(f"Step {step+1}, Loss: {loss.item()}  ")
+            f.write(f"gradient: {abs(Q.grad).sum()}  ")
+            f.write(f"l-1: {l_1_val}\n")
+            f.flush()
+        # Check if the change in loss is smaller than the threshold
+        
+        if abs(Q.grad).sum() < 1e-3:
+            f.write(f"convergent at epoch {step+1}; gradient {abs(Q.grad).sum()} is below threshold")
+            break
+        prev_loss = loss.item()
+    else:
+        f.write(f"max iteration achieved")
+    f.close()
+    return torch.linalg.qr(Q.detach(),mode='reduced')[0]
+
+if __name__=='__main__':
+    start_time = time.time() 
+    atoms = 'H2.xyz'
+    ba = 'ccpVDZ'
+    Q = lambda_optimized_basis(nbasis=norbs(atom=atoms,basis=ba),method='FCI',init_basis='HF',atom=atoms,basis=ba)
     Q_list = Q.transpose(0,1).tolist()
 
     # Write the list into a JSON file
