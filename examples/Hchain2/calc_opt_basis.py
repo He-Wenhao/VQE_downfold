@@ -29,6 +29,9 @@ def calc_opt_basis(xyzfile='Hchain.xyz',output_file = "opt_basis.json",log_file=
     total_time = end_time - start_time  # Calculate the total runtime
 
     print(f"The total running time of the script was: {total_time:.2f} seconds")
+    # Write the message to the last line of the log file
+    with open(log_file, 'a') as file:
+        file.write(f"\n The total running time of the script was: {total_time:.2f} seconds\n")
 
 def main():
     # python3 calc_opt_basis.py --atoms H4 --start 0 --end 4
