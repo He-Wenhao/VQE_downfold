@@ -1,5 +1,0 @@
-/scratch1/09730/whe1/VQE_downfold/examples/Hchain/../../downfolding_methods_pytorch.py:194: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
-  Q = tensor(basis_orth_init[:,:nbasis],requires_grad=True,device=device)
-Overwritten attributes  get_ovlp get_hcore  of <class 'pyscf.scf.hf.RHF'>
-0 start
-The total running time of the script was: 19.03 seconds
