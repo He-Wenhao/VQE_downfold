@@ -768,6 +768,11 @@ def LambdaQ(Ham_const,int_1bd,int_2bd):
             \lambda_T=\sum_{p q}^N\left|h_{p q}+\sum_r^N g_{p q r r}-\frac{1}{2} \sum_r^N g_{p r r q}\right|,
             \lambda_V^{\prime}=\frac{1}{2} \sum_{p>r, s>q}^N\left|g_{p q r s}-g_{p s r q}\right|+\frac{1}{4} \sum_{p q r s}^N\left|g_{p q r s}\right| .
     """
+    is_numpy = isinstance(int_1bd, np.ndarray) and isinstance(int_2bd, np.ndarray)
+    assert is_numpy == False
+    if is_numpy:
+        int_1bd = torch.from_numpy(int_1bd)
+        int_2bd = torch.from_numpy(int_2bd)
     h = int_1bd
     # h += torch.eye(h.shape[0], device=device) * Ham_const  # Add constant term to h
     g = int_2bd
@@ -805,7 +810,11 @@ def LambdaQ(Ham_const,int_1bd,int_2bd):
 
     lambda_V_prime = lambda_V_prime_1 + lambda_V_prime_2
 
-    return (lambda_C + lambda_T + lambda_V_prime)
+    result =  (lambda_C + lambda_T + lambda_V_prime)
+    if is_numpy:
+        return result.detach().cpu().numpy().item()
+    else:
+        return result
     
 def LER(Ham_const,int_1bd,int_2bd):
     """
@@ -827,7 +836,7 @@ def LER(Ham_const,int_1bd,int_2bd):
     diag_indices = torch.arange(int_2bd.shape[0])
     return torch.sum(int_2bd[diag_indices, diag_indices, diag_indices, diag_indices])
 
-def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_basis = 'HF',**kargs):
+def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_basis = 'HF',subspace=None,**kargs):
     import numpy as np
     from scipy.optimize import minimize
     from scipy.linalg import qr
@@ -838,6 +847,7 @@ def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_bas
     assert nele %2 == 0
     # initialize initial guess
     ham0,overlap_mh, basis_orth_init = basis_downfolding_init(fock_method=init_basis,**kargs)
+
     def ler(basis_orth,method):
         t0 = time.time() 
         t1 = time.time()  # Capture the end time
@@ -865,14 +875,21 @@ def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_bas
         return res
     
     # Initial guess (needs to be orthogonal)
-    Q = basis_orth_init.clone().detach()[:,:nbasis].requires_grad_(True)
+    Qs = torch.eye(nbasis,device=device,dtype=torch.float64).requires_grad_(True)
+    if subspace == None:
+        Q0 = basis_orth_init.clone().detach()[:,:nbasis]
+    else:
+        with open(subspace, 'r') as f:
+            basis_orth_init = json.load(f)
+        Q0 = torch.tensor(basis_orth_init,device=device,dtype=torch.float64).transpose(0,1)[:,:nbasis]
 
     # Initialize the Adam optimizer
-    optimizer = torch.optim.Adam([Q], lr=0.1)  # Learning rate is 0.1
+    optimizer = torch.optim.Adam([Qs], lr=0.1)  # Learning rate is 0.1
     prev_loss = None
     # Optimization loop
     f = open(log_file, 'w')
     for step in range(1000):
+        Q = Q0 @ Qs
         optimizer.zero_grad()  # Reset the gradients to zero
 
         loss = l_1(Q,method)  # Compute the current loss
@@ -882,13 +899,13 @@ def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_bas
         optimizer.step()       # Update parameters using the computed gradients
         if step % 10 == 0:
             f.write(f"Step {step+1}, Loss: {loss.item()}  ")
-            f.write(f"gradient: {abs(Q.grad).sum()}  ")
+            f.write(f"gradient: {abs(Qs.grad).sum()}  ")
             f.write(f"l-1: {l_1_val}\n")
             f.flush()
         # Check if the change in loss is smaller than the threshold
         
-        if abs(Q.grad).sum() < 1e-3:
-            f.write(f"convergent at epoch {step+1}; gradient {abs(Q.grad).sum()} is below threshold")
+        if abs(Qs.grad).sum() < 1e-3:
+            f.write(f"convergent at epoch {step+1}; gradient {abs(Qs.grad).sum()} is below threshold")
             break
         prev_loss = loss.item()
     else:
@@ -896,11 +913,12 @@ def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_bas
     f.close()
     return torch.linalg.qr(Q.detach(),mode='reduced')[0]
 
+
 if __name__=='__main__':
     start_time = time.time() 
     atoms = 'H2.xyz'
     ba = 'ccpVDZ'
-    Q = lambda_optimized_basis(nbasis=norbs(atom=atoms,basis=ba),method='FCI',init_basis='HF',atom=atoms,basis=ba)
+    Q = lambda_optimized_basis(nbasis=2,method='FCI',init_basis='HF',subspace='opt_basis.json',atom=atoms,basis=ba)
     Q_list = Q.transpose(0,1).tolist()
 
     # Write the list into a JSON file

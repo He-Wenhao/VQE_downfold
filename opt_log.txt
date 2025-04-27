@@ -1,0 +1,2 @@
+Step 1, Loss: 6.105868276706337  gradient: 0.00011715648066690232  l-1: 6.105868276706337
+convergent at epoch 1; gradient 0.00011715648066690232 is below threshold
