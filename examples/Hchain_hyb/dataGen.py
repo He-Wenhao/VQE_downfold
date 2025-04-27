@@ -94,7 +94,7 @@ def gen_all_bondlength_chains():
     chains = []
     for point in range(3, num_chains + 1):
         bond_length = bond_length_interval * point
-        chains .extend( generate_perturbed_chains(num_chains=1, chain_length=chain_length,bond_length=bond_length, max_perturb=0.2, x_perturb=0.1) )
+        chains .extend( generate_perturbed_chains(num_chains=40, chain_length=chain_length,bond_length=bond_length, max_perturb=0.2, x_perturb=0.1) )
 
     # Write chains to .xyz files in parallel
     write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)    
