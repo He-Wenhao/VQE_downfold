@@ -67,7 +67,7 @@ def df_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res_E.
             json.dump(ham_data, f, indent=4)
     
     end_time = time.time()
-    print(f"Successfully updated {res_file} with {method}_E: {E}")
+    print(f"Successfully updated {res_file} with {name}_E: {E}")
     print(f"Execution time: {end_time - start_time:.4f} seconds (downfold time: {d_time-start_time:.4f})")
 
 def sto3G_energy(xyzfile='Hchain.xyz', opt_log_file="opt_log.txt", res_file='res_E.json',saveHam=False,ham_file='ham.json'):
@@ -162,7 +162,7 @@ def main():
         for basisFile in [basisE,basisl]:
             df_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,method = 'HF',basisFile = basisFile,saveHam=args.saveHam,ham_file=ham_file)
         sto3G_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,saveHam=args.saveHam,ham_file=ham_file)
-        ccpVDZ_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file)
+        #ccpVDZ_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file)
         with open(log_file, 'a') as f:
             f.write(done_mark + '\n')
 

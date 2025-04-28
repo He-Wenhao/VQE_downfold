@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -o log-%j
-#SBATCH -N 10
+#SBATCH -N 20
 #SBATCH --ntasks-per-node=1
 #SBATCH -A DMR21001
 #SBATCH -p development
@@ -16,7 +16,7 @@ NODES=($NODELIST)
 NUM_NODES=${#NODES[@]}
 
 # Task parameters
-TASKS_PER_NODE=92
+TASKS_PER_NODE=46
 ATOMS="H6"
 
 # Loop through the nodes and assign tasks
