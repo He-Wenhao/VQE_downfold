@@ -142,6 +142,14 @@ def main():
 
     # Loop through the specified range and call calc_opt_basis
     for i in range(args.start, args.end + 1):
+        log_file = f"H_chain_xyzs/{args.atoms}/{i}/log"
+        done_mark = 'compare done'
+        if os.path.exists(log_file):
+            with open(log_file, 'r') as f:
+                content = f.read()
+                if done_mark in content:
+                    print(i,'skip')
+                    continue  # Skip appending, go to next iteration
         xyzfile = f"H_chain_xyzs/{args.atoms}/{i}/Hchain.xyz"
         opt_log_file = f"H_chain_xyzs/{args.atoms}/{i}/opt_log.txt"
         res_file = f"H_chain_xyzs/{args.atoms}/{i}/res_E_l.json"
@@ -155,6 +163,8 @@ def main():
             df_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,method = 'HF',basisFile = basisFile,saveHam=args.saveHam,ham_file=ham_file)
         sto3G_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,saveHam=args.saveHam,ham_file=ham_file)
         ccpVDZ_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file)
+        with open(log_file, 'a') as f:
+            f.write(done_mark + '\n')
 
 
 if __name__ == '__main__':
