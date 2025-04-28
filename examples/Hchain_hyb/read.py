@@ -173,6 +173,6 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
-    dbg_test()
+    main()
+    #dbg_test()
     

@@ -17,7 +17,7 @@ NUM_NODES=${#NODES[@]}
 
 # Task parameters
 TASKS_PER_NODE=92
-ATOMS="H6"
+ATOMS="H4"
 
 # Loop through the nodes and assign tasks
 for i in $(seq 0 $((NUM_NODES-1))); do
@@ -26,7 +26,7 @@ for i in $(seq 0 $((NUM_NODES-1))); do
     NODE=${NODES[i]}
 
     # Run the task on the current node
-    srun --nodes=1 --nodelist=$NODE $PYTHON hyb_opt.py --atoms $ATOMS --start $START --end $END &
+    srun --nodes=1 --nodelist=$NODE $PYTHON read.py --atoms $ATOMS --start $START --end $END &
 done
 
 # Wait for all background jobs to finish
