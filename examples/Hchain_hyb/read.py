@@ -9,10 +9,11 @@ import scipy
 sys.path.append(os.path.join("../.."))
 from downfolding_methods_pytorch import LambdaQ, nelec, norbs, fock_downfolding, Solve_fermionHam, perm_orca2pyscf
 from pyscf import gto, scf, dft
+import shutil
 load_time1 = time.time()
 print('load time =',load_time1-load_time0)
 
-def read_file(read_folder,output_folder,name):
+def read_file(read_folder,output_folder,name,saveHam = False):
     time0 = time.time()
     # Define the input XYZ file
     xyz_file_path = os.path.join(read_folder,'Hchain.xyz')
@@ -113,6 +114,12 @@ def read_file(read_folder,output_folder,name):
     
     with open(obs_path, "w") as json_file:
         json.dump(obs_data, json_file, indent=4, separators=(',', ': '))
+        
+    if saveHam == True:
+        ham_path = os.path.join(output_folder,'ham',name)
+        os.makedirs(os.path.dirname(ham_path), exist_ok=True)
+        # here ham_path is a .json file name, copy ham.json to ham_path
+        shutil.copyfile(os.path.join(read_folder,'ham.json'), ham_path)
 
     time1 = time.time()
     print(f"JSON file saved as {obs_path} with time {time1-time0:.4f} seconds")
@@ -162,6 +169,7 @@ def main():
     parser.add_argument("--atoms", type=str, required=True, help="Name of the atom chain (e.g., H4).")
     parser.add_argument("--start", type=int, required=True, help="Start index for processing.")
     parser.add_argument("--end", type=int, required=True, help="End index for processing.")
+    parser.add_argument('--saveHam', action='store_true', help='Save Hamiltonian if specified')
     
     args = parser.parse_args()
 
@@ -169,7 +177,7 @@ def main():
     for i in range(args.start, args.end + 1):
         read_folder = f"H_chain_xyzs/{args.atoms}/{i}/"
         output_folder = f"H_chain_data/{args.atoms}"
-        read_file(read_folder,output_folder,name=f"{i}.json")
+        read_file(read_folder,output_folder,name=f"{i}.json",saveHam=args.saveHam)
 
 
 if __name__ == '__main__':

@@ -76,7 +76,7 @@ def gen_perturbed_chains():
 def gen_dissociation_chains():
     # Generate chains
     num_chains = 25  # Number of chains
-    chain_length = 6  # Number of H atoms per chain
+    chain_length = 4  # Number of H atoms per chain
     bond_length_interval = 0.1
     chains = []
     for point in range(3, num_chains + 1):
@@ -100,5 +100,5 @@ def gen_all_bondlength_chains():
     write_chains_to_xyz_parallel(chains, chain_length, num_processes=8)    
     
 if __name__ == '__main__':
-    gen_all_bondlength_chains()
-    #gen_dissociation_chains()
+    #gen_all_bondlength_chains()
+    gen_dissociation_chains()
