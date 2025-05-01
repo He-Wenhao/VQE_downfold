@@ -747,12 +747,13 @@ def LambdaQ_bk(Ham_const,int_1bd,int_2bd):
     return (lambda_T + lambda_V).item()
 
 
-def LambdaQ(Ham_const,int_1bd,int_2bd):
+def LambdaQ(Ham_const,int_1bd,int_2bd,backend=torch):
     """
     Calculate the LambdaQ value for a given Hamiltonian.
     
     Parameters:
     Ham_const : torch.Tensor
+        E0
         The constant part of the Hamiltonian.
     int_1bd : torch.Tensor
         h_{pq}
@@ -764,57 +765,41 @@ def LambdaQ(Ham_const,int_1bd,int_2bd):
     Returns: float
         \lambda_C+\lambda_T+\lambda_V^{\prime}
         where
-            \lambda_C=\left|\sum_p^N h_{p p}+\frac{1}{2} \sum_{p r}^N g_{p p r r}-\frac{1}{4} \sum_{p r}^N g_{p r r p}\right|,
+            \lambda_C=\left|E0+\sum_p^N h_{p p}+\frac{1}{2} \sum_{p r}^N g_{p p r r}-\frac{1}{4} \sum_{p r}^N g_{p r r p}\right|,
             \lambda_T=\sum_{p q}^N\left|h_{p q}+\sum_r^N g_{p q r r}-\frac{1}{2} \sum_r^N g_{p r r q}\right|,
             \lambda_V^{\prime}=\frac{1}{2} \sum_{p>r, s>q}^N\left|g_{p q r s}-g_{p s r q}\right|+\frac{1}{4} \sum_{p q r s}^N\left|g_{p q r s}\right| .
     """
-    is_numpy = isinstance(int_1bd, np.ndarray) and isinstance(int_2bd, np.ndarray)
-    assert is_numpy == False
-    if is_numpy:
-        int_1bd = torch.from_numpy(int_1bd)
-        int_2bd = torch.from_numpy(int_2bd)
+
+    trace = backend.trace
+    einsum = backend.einsum
+    abs = backend.abs
+    sum = backend.sum
+
     h = int_1bd
-    # h += torch.eye(h.shape[0], device=device) * Ham_const  # Add constant term to h
     g = int_2bd
     N = h.shape[0]
 
     # λ_C = | sum_p h_pp + 1/2 sum_{p,r} g_pprr - 1/4 sum_{p,r} g_prrp |
-    diag_h = torch.sum(torch.diagonal(h))
-    g_pprr = torch.sum(g.diagonal(offset=0, dim1=0, dim2=1).diagonal(offset=0, dim1=1, dim2=2))
-    g_prrp = torch.sum(g.permute(0, 2, 3, 1).diagonal(offset=0, dim1=0, dim2=2).diagonal(offset=0, dim1=1, dim2=2))
-    lambda_C = torch.abs(diag_h + 0.5 * g_pprr - 0.25 * g_prrp)
+    diag_h = trace(h)
+    g_pprr = einsum('pprr->', g)
+    g_prrp = einsum('prrp->', g)  # permute and sum over r → g[p,r,r,p]
+    lambda_C = abs(diag_h + 0.5 * g_pprr - 0.25 * g_prrp+Ham_const)
 
     # λ_T = sum_{p,q} | h_pq + sum_r g_pqrr - 1/2 sum_r g_prrq |
-    sum_r_g_pqrr = torch.sum(g, dim=3)  # g_pqr*
-    sum_r_g_prrq = torch.sum(g.permute(0, 2, 3, 1), dim=2)  # g_pr*rq
+    sum_r_g_pqrr = einsum('pqrr->pq', g)
+    sum_r_g_prrq = einsum('prrq->pq', g)  # permute and sum over r → g[p,r,*,q]
     T_term = h + sum_r_g_pqrr - 0.5 * sum_r_g_prrq
-    lambda_T = torch.sum(torch.abs(T_term))
+    lambda_T = sum(abs(T_term))
 
     # λ_V' = 1/2 sum_{p>r, s>q} |g_pqrs - g_psrq| + 1/4 sum_{pqrs} |g_pqrs|
-    N = g.shape[0]
-
-    # Create all index grids
-    p, q, r, s = torch.meshgrid(
-        torch.arange(N), torch.arange(N), torch.arange(N), torch.arange(N), indexing='ij'
-    )
-
-    # Create masks: p > r and q < s
-    mask = (p > r) & (q < s)
-
-    # Compute the difference and apply mask
+    indices = backend.arange(N)
+    p, q, r, s = backend.meshgrid(indices, indices, indices, indices, indexing='ij')
+    mask = (p > r) & (s > q)
     diff = g[p, q, r, s] - g[p, s, r, q]
-    lambda_V_prime_1 = torch.sum(torch.abs(diff[mask]))
-    lambda_V_prime_1 *= 0.5
-
-    lambda_V_prime_2 = 0.25 * torch.sum(torch.abs(g))
-
+    lambda_V_prime_1 = 0.5 * sum(abs(diff[mask]))
+    lambda_V_prime_2 = 0.25 * sum(abs(g))
     lambda_V_prime = lambda_V_prime_1 + lambda_V_prime_2
-
-    result =  (lambda_C + lambda_T + lambda_V_prime)
-    if is_numpy:
-        return result.detach().cpu().numpy().item()
-    else:
-        return result
+    return lambda_C + lambda_T + lambda_V_prime
     
 def LER(Ham_const,int_1bd,int_2bd):
     """
@@ -884,7 +869,7 @@ def lambda_optimized_basis(nbasis=2,method='FCI',log_file='opt_log.txt',init_bas
         Q0 = torch.tensor(basis_orth_init,device=device,dtype=torch.float64).transpose(0,1)[:,:nbasis]
 
     # Initialize the Adam optimizer
-    optimizer = torch.optim.Adam([Qs], lr=0.1)  # Learning rate is 0.1
+    optimizer = torch.optim.Adam([Qs], lr=0.01)  # Learning rate is 0.1
     prev_loss = None
     # Optimization loop
     f = open(log_file, 'w')
