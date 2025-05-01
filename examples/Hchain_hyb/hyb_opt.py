@@ -61,6 +61,7 @@ def main():
     parser.add_argument("--atoms", type=str, required=True, help="Name of the atom chain (e.g., H4).")
     parser.add_argument("--start", type=int, required=True, help="Start index for processing.")
     parser.add_argument("--end", type=int, required=True, help="End index for processing.")
+    parser.add_argument('--saveHam', action='store_true', help='Save Hamiltonian if specified')
     
     args = parser.parse_args()
 
