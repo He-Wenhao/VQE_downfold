@@ -106,7 +106,7 @@ def read_file(read_folder,output_folder,name,saveHam = False):
         "HF": res_E_data["HF"],
         "B3LYP": res_E_data["B3LYP"],
         "sto-3G": res_E_data["sto-3G"],
-        "ccpVDZ": res_E_data["ccpVDZ"],
+       # "ccpVDZ": res_E_data["ccpVDZ"],
         'proj':proj.tolist()
     }
 

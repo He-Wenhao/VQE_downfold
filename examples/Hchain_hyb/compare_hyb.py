@@ -162,7 +162,7 @@ def main():
         for basisFile in [basisE,basisl]:
             df_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,method = 'HF',basisFile = basisFile,saveHam=args.saveHam,ham_file=ham_file)
         sto3G_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file,saveHam=args.saveHam,ham_file=ham_file)
-        #ccpVDZ_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file)
+        ccpVDZ_energy(xyzfile=xyzfile, opt_log_file=opt_log_file,res_file=res_file)
         with open(log_file, 'a') as f:
             f.write(done_mark + '\n')
 
